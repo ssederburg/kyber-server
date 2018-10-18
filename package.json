@@ -1,0 +1,31 @@
+{
+  "name": "kyber-server",
+  "version": "0.0.1",
+  "description": "authorize validate compose transform map act respond framework",
+  "main": "index.ts",
+  "scripts": {
+    "start": "nodemon -r ts-node/register index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ssederburg/kyber-server.git"
+  },
+  "author": "Steven Sederburg <stevenscloud@live.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ssederburg/kyber-server/issues"
+  },
+  "homepage": "https://github.com/ssederburg/kyber-server#readme",
+  "dependencies": {
+    "config": "^2.0.1",
+    "dotenv": "^6.1.0",
+    "fs-extra": "^7.0.0",
+    "lodash": "^4.17.11",
+    "ts-node": "^7.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4",
+    "typescript": "^3.1.3"
+  }
+}
