@@ -64,6 +64,5 @@ _bundle/
 _docker/
 .env
 
-package-lock.json
 app/node_modules
 app/
