@@ -6,21 +6,18 @@ import {RouteHandler} from './routes'
 import {Schematic} from './schematics'
 import {KyberServerOptions} from './'
 import * as _ from 'lodash'
+const env = require("dotenv").config()
+import * as config from 'config'
 
 export class KyberServer {
 
     private server = express()
     private isStarted: boolean = false
     private shuttingDown: boolean = false
-    private options: KyberServerOptions = new KyberServerOptions()
-
+    
     public events = new EventEmitter()
 
-    constructor (options: KyberServerOptions) {
-
-        this.options = _.cloneDeep(options)
-
-    }
+    constructor (private options: KyberServerOptions) {}
 
     public registerRoute(verb: string, path: string, schematic: Schematic, contentType?: string) {
         
@@ -45,6 +42,7 @@ export class KyberServer {
                 break;
             case "patch":
                 RouteHandler.patch(this.server, path, schematic)
+                break;
             default:
                 break;
         }
@@ -61,12 +59,20 @@ export class KyberServer {
         this.server.use((err, req, res, next) => {
             if (err) {
                 // TODO: Custom Error handler
-                return next(err)
+                console.log('500: ' + err)
+                if (res.headersSent) {
+                    return
+                }
+                res.status(500)
+                res.send(err)
+                return
             }
+            console.log('400')
             next(err)
         })
 
         this.server.use((req, res, next) => {
+            console.log('404')
             return res.status(404).send()
         })
 
@@ -100,7 +106,7 @@ export class KyberServer {
         this.shuttingDown = true
 
         this.events.emit(KyberServerEvents.ServerStopping)
-        this.server.close()
+        
         this.events.emit(KyberServerEvents.ServerStopped)
         process.exit(0)
 

@@ -1,5 +1,6 @@
 import * as Express from 'express'
 import { Schematic } from "..";
+import * as config from 'config'
 
 export class RouteHandler {
 
@@ -11,7 +12,6 @@ export class RouteHandler {
 
             res.json(output)
 
-            return next()
         })
     
     }
@@ -20,11 +20,10 @@ export class RouteHandler {
 
         server.post(path, (req, res, next) => {
             const output: any = schematic
-            output.message = `called POST at ${path}`
+            output.message = `called POST at ${path} ${process.env.TESTTEXT} ${config.port}`
 
             res.json(output)
 
-            return next()
         })
     
     }
@@ -37,7 +36,6 @@ export class RouteHandler {
 
             res.json(output)
 
-            return next()
         })
     
     }
@@ -50,7 +48,6 @@ export class RouteHandler {
 
             res.json(output)
 
-            return next()
         })
     
     }
@@ -60,10 +57,9 @@ export class RouteHandler {
         server.patch(path, (req, res, next) => {
             const output: any = schematic
             output.message = `called PATCH at ${path}`
+            throw new Error('This didnt work!')
+            // res.json(output)
 
-            res.json(output)
-
-            return next()
         })
     
     }
