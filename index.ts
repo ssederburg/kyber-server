@@ -1,13 +1,17 @@
+import * as Express from 'express'
+
 const express = require('express')
+const bodyParser = require('body-parser')
 const EventEmitter = require('events')
 
 import {KyberServerEvents} from './events'
-import {RouteHandler} from './routes'
+import {RouteHandler, RouteOptions} from './routes'
 import {Schematic} from './schematics'
 import {KyberServerOptions} from './'
 import * as _ from 'lodash'
 const env = require("dotenv").config()
 import * as config from 'config'
+import { RequestContext } from './schemas';
 
 export class KyberServer {
 
@@ -17,35 +21,30 @@ export class KyberServer {
     
     public events = new EventEmitter()
 
-    constructor (private options: KyberServerOptions) {}
+    constructor (private options: KyberServerOptions) {
+        this.server.use(bodyParser.json())
+    }
 
-    public registerRoute(verb: string, path: string, schematic: Schematic, contentType?: string) {
+    public registerHandler(verb: string, path: string, handler: any) {
+        if (!this.server[verb]) {
+            console.warn(`Attempted to Register Handler for verb ${verb} @ ${path}. Unknown verb. Handler registration ignored...`)
+            return
+        }
+
+        this.server[verb](path, (req: RequestContext, res: Express.Response, next: Express.NextFunction) => {
+            return handler(req, res, next)
+        })
+    }
+
+    public registerRoute(options: RouteOptions) {
         
         if (this.isStarted) {
             console.error(`Attempted to KyberServer.registerRoute after server started. Route Registration ignored...`)
             return
         }
-        RouteHandler.all(this.server, path, schematic)
 
-        switch (verb.toLowerCase()) {
-            case "get":
-                RouteHandler.get(this.server, path, schematic)
-                break;
-            case "post":
-                RouteHandler.post(this.server, path, schematic)
-                break;
-            case "put":
-                RouteHandler.put(this.server, path, schematic)
-                break;
-            case "delete":
-                RouteHandler.delete(this.server, path, schematic)
-                break;
-            case "patch":
-                RouteHandler.patch(this.server, path, schematic)
-                break;
-            default:
-                break;
-        }
+        const routeHandler = new RouteHandler()
+        routeHandler.register(this.server, options)
 
     }
 
@@ -72,6 +71,7 @@ export class KyberServer {
         })
 
         this.server.use((req, res, next) => {
+            // TODO: Handle 404 Errors
             console.log('404')
             return res.status(404).send()
         })
@@ -107,12 +107,15 @@ export class KyberServer {
 
         this.events.emit(KyberServerEvents.ServerStopping)
         
+        // TODO: Call Shutdown on all routes
         this.events.emit(KyberServerEvents.ServerStopped)
         process.exit(0)
 
     }
 }
 
-export * from './events'
-export * from './schematics'
-export * from './kyberServerOptions'
+export { KyberServerEvents} from './events'
+export { Schematic } from './schematics'
+export { KyberServerOptions } from './kyberServerOptions'
+export { RouteOptions } from './routes'
+export { RequestContext, IUserContext } from './schemas'
