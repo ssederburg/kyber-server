@@ -21,4 +21,6 @@ export class RequestContext {
     subdomains?: Array<string>
     xhr?: boolean
     user?: IUserContext
+    setTimeout?(interval:number)
+    timedout?: boolean = false
 }

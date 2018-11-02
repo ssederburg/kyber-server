@@ -1,4 +1,4 @@
-export class ComposerDefSchema {
-    public className: string
-    public args: any
+import { BaseDefSchema } from "./baseDefSchema";
+
+export class ComposerDefSchema extends BaseDefSchema {
 }

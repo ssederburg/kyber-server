@@ -6,6 +6,7 @@ export class RouteOptions {
     schematic?: Schematic = null
     contentType?: string = 'application/json'
     useResolver?: boolean = false
+    sharedResources?: Array<any> = []
     
     public resolve?(req: Express.Request|any): Promise<Schematic>|Schematic|null {
         return null

@@ -3,11 +3,13 @@ import { Schematic, RequestContext } from "..";
 import { RouteOptions } from './'
 import * as config from 'config'
 import { ExecutionContext } from '../executionContext';
+import { Utilities } from '../utilities/utilities';
 
 export class RouteHandler {
 
     //#region Server Method Implementation
     public register(server: Express.Application, options: RouteOptions) {
+
         if (!options.verb) {
             console.warn(`Attempted to register route @${options.path} contained null verb. Route ignored...`)
             return
@@ -27,7 +29,8 @@ export class RouteHandler {
     }
     //#endregion
 
-    private async execute(server: Express.Application, options: RouteOptions, req: RequestContext, res: Express.Response, 
+    private async execute(server: Express.Application, options: RouteOptions,
+        req: RequestContext, res: Express.Response, 
         next: Express.NextFunction) {
 
         // Check if resolver. If so, run it before continuing
@@ -47,22 +50,48 @@ export class RouteHandler {
             return
         }
 
-        const execContext: ExecutionContext = new ExecutionContext(req, options.schematic)
+        let execContext: ExecutionContext;
+        try {
 
-        await this.beforeEachRun(server, options, req, res)
-        // How to return an error from here - return next({httpStatus: 500, message: 'Did not work'})
-        // If returning an error in JSON, make sure header for JSON is set
+            setTimeout(() => {
+                if (res.headersSent) return
+                console.log(`Timeout exceeded`)
+                req.timedout = true
+                res.status(408).json('Request timeout')
+                return
+            }, options.schematic.timeout||5000)
 
-        const result = await execContext.execute()
-        res.json(result)
+            execContext = new ExecutionContext(req, options.schematic, options.sharedResources||[])
 
+            if (req.timedout) return
+            await this.beforeEachExecution(server, options, req, res)
+            // How to return an error from here - return next({httpStatus: 500, message: 'Did not work'})
+            // If returning an error in JSON, make sure header for JSON is set
+    
+            if (req.timedout) return
+            const result = await execContext.execute()
+            if (req.timedout) return
+            res.status(execContext.httpStatus).json(result)
+            
+            // No need to "await" response from afterRun call because response has already been sent to caller.
+            if (req.timedout) return
+            this.afterEachExecution(server, options, req, res, next)    
 
-        // No need to "await" response from afterRun call because response has already been sent to caller.
-        this.afterEachRun(server, options, req, res, next)
+        }
+        catch (err) {
+            // TODO: ERROR RESPONSE FROM SCHEMATIC
+            if (res.headersSent) return
+            if (Utilities.isString(err)) {
+                if (err.indexOf('timeout') >= 0) {
+                    return res.status(408).json(err)
+                }
+            }
+            res.status(execContext.httpStatus).json(err)
+        }
 
     }
 
-    private beforeEachRun(server: Express.Application, options: RouteOptions, 
+    private beforeEachExecution(server: Express.Application, options: RouteOptions, 
         req: RequestContext, res: Express.Response): Promise<any> {
 
         res.header('X-Powered-By', 'kyber')
@@ -70,7 +99,7 @@ export class RouteHandler {
 
     }
 
-    private afterEachRun(server: Express.Application, options: RouteOptions, 
+    private afterEachExecution(server: Express.Application, options: RouteOptions, 
         req: RequestContext, res: Express.Response,
         next: Express.NextFunction): Promise<any> {
 

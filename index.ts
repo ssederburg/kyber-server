@@ -11,7 +11,8 @@ import {KyberServerOptions} from './'
 import * as _ from 'lodash'
 const env = require("dotenv").config()
 import * as config from 'config'
-import { RequestContext } from './schemas';
+import { RequestContext, BaseProcessor } from './schemas';
+import { ExecutionContext } from './executionContext';
 
 export class KyberServer {
 
@@ -118,4 +119,7 @@ export { KyberServerEvents} from './events'
 export { Schematic } from './schematics'
 export { KyberServerOptions } from './kyberServerOptions'
 export { RouteOptions } from './routes'
-export { RequestContext, IUserContext } from './schemas'
+export { RequestContext, IUserContext, Parameter, ComposerDefSchema, 
+    Activity, SharedResourceSchema, ExecutionMode } from './schemas'
+export { BaseComposer } from './composers'
+export { ExecutionContext } from './executionContext'

@@ -1,12 +1,6 @@
-import { ComposerDefSchema } from "../schemas";
+import { ComposerDefSchema, BaseProcessor } from "../schemas"
+import { ExecutionContext } from '../executionContext'
 
-export class BaseComposer {
-
-    constructor(protected executionContext: any, protected composerDef: ComposerDefSchema, protected correlationId: string) {
-    }
-
-    public fx(): Promise<boolean|string> {
-        return Promise.resolve(false)
-    }
+export class BaseComposer extends BaseProcessor {
 
 }
