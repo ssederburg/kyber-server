@@ -123,3 +123,5 @@ export { RequestContext, IUserContext, Parameter, ComposerDefSchema,
     Activity, SharedResourceSchema, ExecutionMode } from './schemas'
 export { BaseComposer } from './composers'
 export { ExecutionContext } from './executionContext'
+export { Utilities } from './utilities/utilities'
+export { StartsWith } from './validators'

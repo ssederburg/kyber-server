@@ -144,20 +144,48 @@ import { ValidatorType e.g. StartsWith, EndsWith } from `kyber-server`
     dataType: 'string',
     whiteList: ['application/json'],
     validators: [
-        StartsWith('test'),
-        EndsWith('hey'),
-        Length(3),
-        MinLength(1),
-        MaxLength(10),
-        Range(0, 100),
-        Min(0),
-        Max(100),
-        MinDate(new Date('01/01/2000')),
-        MaxDate(new Date('12/31/2030')),
-        IsFloat,
-        IsObject,
-        IsArray,
-        Contains('world')
+        function (value) {
+            return StartsWith('test', value)
+        },
+        function (value) {
+            return EndsWith('hey', value)
+        },
+        function (value) {
+            return Length(3, value)
+        },
+        function (value) {
+            return MinLength(1, value)
+        },
+        function (value) {
+            return MaxLength(10, value)
+        },
+        function (value) {
+            return Range(0, 100, value)
+        },
+        function (value) {
+            return Min(0, value)
+        },
+        function (value) {
+            return Max(100, value)
+        },
+        function (value) {
+            return MinDate(new Date('01/01/2000'), value)
+        },
+        function (value) {
+            return MaxDate(new Date('12/31/2030'), value)
+        },
+        function (value) {
+            return IsFloat(value)
+        },
+        function (value) {
+            return IsObject(value)
+        },
+        function (value) {
+            return IsArray(value)
+        },
+        function (value) {
+            return Contains('world', value)
+        }
     ]
 }
 ```
