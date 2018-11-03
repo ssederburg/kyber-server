@@ -19,6 +19,7 @@ export class HealthCheckGetSchematic extends Schematic {
 
     id: string = 'HealthCheckSchematic'
     description: string = 'Use GET verb to check the health of the service.'
+    timeout: 10000
     parameters: Array<Parameter> = []
     sharedResources: Array<any> = [
         DataProvider
@@ -41,6 +42,7 @@ export class HealthCheckGetSchematic extends Schematic {
 |---------------|-----------------------------------|
 | `id`            | Any string value. Unique identifier for the schematic. Does not have to relate to the class used.|
 | `description`   | Description for the schematic |
+| `timeout`       | Optional timeout in milliseconds to allow a schematic to run before returning http status 408 Request Timed Out. Default is 5000 milliseconds (5 seconds). |
 | `parameters`    | see PARAMETERS section below |
 | `sharedResources` | List of Types required as Shared Resources. Verified by Execution Context to ensure shared resources are passed properly. |
 | `activities`    | Array of ACTIVITY Objects. |
