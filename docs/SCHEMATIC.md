@@ -148,7 +148,13 @@ import { ValidatorType e.g. StartsWith, EndsWith } from `kyber-server`
             return StartsWith('test', value)
         },
         function (value) {
+            return StartsWithAny(['test', '1', '555'], value)
+        },
+        function (value) {
             return EndsWith('hey', value)
+        },
+        function (value) {
+            return EndsWithAny(['hey', 'hello', 'welcome'], value)
         },
         function (value) {
             return Length(3, value)
@@ -203,7 +209,9 @@ import { ValidatorType e.g. StartsWith, EndsWith } from `kyber-server`
 | Validator     | Description                      |
 |---------------|----------------------------------|
 | `StartsWith`    | Takes an argument `string` validated against the value to ensure the value `begins with` the argument text. |
+| `StartsWithAny`    | Takes an argument `Array<string>` validated against the value to ensure the value `begins with` any one item in the list. |
 | `EndsWith`      | Similar to `startsWith` except ensures the value `ends with` the argument text. |
+| `EndsWithAny`      | Similar to `endsWith` except ensures the value `ends with` the any one item in the list. |
 | `Length`        | Takes an argument `number` describing the length the value MUST be. |
 | `MinLength`     | Takes an argument `number` describing the length the value must be at a minimum. |
 | `MaxLength`     | Takes an argument `number` describing the maximum allowable length of the value. |

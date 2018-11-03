@@ -124,4 +124,4 @@ export { RequestContext, IUserContext, Parameter, ComposerDefSchema,
 export { BaseComposer } from './composers'
 export { ExecutionContext } from './executionContext'
 export { Utilities } from './utilities/utilities'
-export { StartsWith } from './validators'
+export { StartsWith, StartsWithAny, EndsWith, EndsWithAny } from './validators'

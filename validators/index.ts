@@ -1,1 +1,5 @@
 export * from './startsWith'
+export * from './startsWith'
+export * from './startsWithAny'
+export * from './endsWith'
+export * from './endsWithAny'
