@@ -205,7 +205,7 @@ import { ValidatorType e.g. StartsWith, EndsWith } from `kyber-server`
 | `whiteList`     | Value must exist in the list of values. |
 | `blackList`     | Value must NOT exist in the list of values. |
 
-##### SET USING KYBER VALIDATORS IN THE VALIDATORS COLLECTION OF THE PARAMETER
+##### SET USING KYBER VALIDATORS IN THE VALIDATORS COLLECTION OF THE PARAMETER OR USING CUSTOM VALIDATOR FUNCTION
 | Validator     | Description                      |
 |---------------|----------------------------------|
 | `StartsWith`    | Takes an argument `string` validated against the value to ensure the value `begins with` the argument text. |
