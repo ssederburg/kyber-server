@@ -12,3 +12,6 @@ Framework to support the authoring of schematics for web services.
 9. Act
 10. Respond
 
+## DOCUMENTATION
+
+[INDEX](./docs/INDEX.md)
