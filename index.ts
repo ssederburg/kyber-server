@@ -124,4 +124,5 @@ export { RequestContext, IUserContext, Parameter, ComposerDefSchema,
 export { BaseComposer } from './composers'
 export { ExecutionContext } from './executionContext'
 export { Utilities } from './utilities/utilities'
-export { StartsWith, StartsWithAny, EndsWith, EndsWithAny, Length, MinLength, MaxLength } from './validators'
+export { StartsWith, StartsWithAny, EndsWith, EndsWithAny, Length, MinLength, MaxLength,
+    Range, Min, Max, MinDate, MaxDate, IsFloat, IsObject, IsArray, Contains, ContainsAny } from './validators'

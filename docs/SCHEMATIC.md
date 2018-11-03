@@ -193,6 +193,9 @@ import { ValidatorType e.g. StartsWith, EndsWith } from `kyber-server`
         },
         function (value) {
             return Contains('world', value)
+        },
+        function (value) {
+            return ContainsAny(['world', 'hello', '1'], value)
         }
     ]
 }
@@ -225,4 +228,5 @@ import { ValidatorType e.g. StartsWith, EndsWith } from `kyber-server`
 | `IsFloat`       | Checks that the value is a floating point number e.g. has a decimal. |
 | `IsObject`      | Checks if the value is a JavaScript object type e.g. JSON. |
 | `IsArray`       | Checks if the value is a JavaScript array type e.g. JSON Array. |
-| `Contains`      | Takes an argument of `any` checking that the value `contains` the `argument`. If value is an array, it will verify the argument exists in the collection. If value is a string, it will verify the string contains the argument within itself. |
+| `Contains`      | Takes an argument of `any` checking that the value `contains` the `argument`. |
+| `ContainsAny`      | Takes an argument of `Array<any>` checking that the value `contains` any item within list `argument`. |
