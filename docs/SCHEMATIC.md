@@ -123,8 +123,8 @@ Sources for a Parameter can be expressed using the following values. You may sep
 ##### EXAMPLES
 | Example       | Description                      |
 |---------------|----------------------------------|
-| `req.query.wkt||req.body.wkt` | Will first look for a value provided as a query string parameter named `wkt`. If no query string parameter exists the value will be pulled from the Request Body. |
-| `req.headers.Content-Type||=application/json` | Value will be loaded from the Header `Content-Type` set with the Request. If `Content-Type` does not exist, the value `application/json` will be used. |
+| <code>req.query.wkt\|\|req.body.wkt</code> | Will first look for a value provided as a query string parameter named `wkt`. If no query string parameter exists the value will be pulled from the Request Body. |
+| <code>req.headers.Content-Type\|\|=application/json</code> | Value will be loaded from the Header `Content-Type` set with the Request. If `Content-Type` does not exist, the value `application/json` will be used. |
 | `req.body.id` | Will look for a Request Body field named `id` and set the value accordingly. If `id` does not exist or `body` does not exist, the value will remain `null`. If the value is also set to `required: true` an Invalid Request (400) will be thrown. |
 | `process.env.connectionString` | Load the value from the Node Process Environment Variable titled `connectionString`. Environment variables can be set using `dotenv` and not loaded into source control. If `process.env.connectionString` does not exist, the value remains `null`|
 
