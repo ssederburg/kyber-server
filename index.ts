@@ -11,8 +11,9 @@ import {KyberServerOptions} from './'
 import * as _ from 'lodash'
 const env = require("dotenv").config()
 import * as config from 'config'
-import { RequestContext, BaseProcessor } from './schemas';
+import { RequestContext } from './schemas';
 import { ExecutionContext } from './executionContext';
+const uuidv4 = require('uuid/v4')
 
 export class KyberServer {
 
@@ -24,6 +25,10 @@ export class KyberServer {
 
     constructor (private options: KyberServerOptions) {
         this.server.use(bodyParser.json())
+        this.server.use((req, res, next) => {
+            req.id = uuidv4()
+            return next()
+        })
     }
 
     public registerHandler(verb: string, path: string, handler: any) {

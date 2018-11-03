@@ -22,6 +22,7 @@ export class ExecutionContext {
     private parameters: Array<Parameter> = []
 
     constructor(public req: RequestContext, public schematic: Schematic, private sharedResources: Array<SharedResourceSchema>) {
+        this.correlationId = req.id
     }
 
     public execute(): Promise<any> {

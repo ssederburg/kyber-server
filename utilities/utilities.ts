@@ -41,6 +41,9 @@ export class Utilities {
                 if (expr.indexOf('=')===0) {
                     result = expr.replace('=', '')
                 }
+                if (expr.indexOf('req.id')===0) {
+                    result = source.id
+                }
             }
         })
         return result

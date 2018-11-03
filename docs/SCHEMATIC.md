@@ -68,7 +68,7 @@ kyber.registerRoute({
 ```
 | Field         | Description                        |
 |---------------|------------------------------------|
-| `verb`          | GET, POST, PUT, DELETE, PURGE and any other verb supported by connect middleware. |
+| `verb`          | GET, POST, PUT, DELETE, PURGE and any other verb supported by connect middleware. Here is a [List](https://expressjs.com/en/4x/api.html#app.METHOD) of supported verbs. |
 | `path`          | Path used to identify the Route. Follows normal Router path convention e.g. `/some/path/:parameter` where `:parameter` becomes `req.params.parameter`. |
 | `schematic`     | Instance of the Schematic class to assign to the Route. |
 | `sharedResources` | An array of name and value pairs of a unique key name for the shared resource to be consumed alongside its INSTANCE of the class (Singleton). Consumers executed by Execution context are able to retrieve the instance of the singleton using the convention `this.executionContext.getSharedResource(name)`. |
@@ -118,6 +118,7 @@ Sources for a Parameter can be expressed using the following values. You may sep
 | `req.cookies.name` | Value loaded from the Request Cookies collection using the `name` as the key for the value. |
 | `req.signedCookies.name` | If using Signed Cookies, value is loaded from the Request Signed Cookies collection using the `name` as the key for the value. |
 | `req.headers.name` | Value loaded from the Request Headers Collection using `name` as the Header Key. |
+| `req.id` | Value loaded from the Request Correlation Id. This value is set on every request to the server and is UUID v.4 unique. |
 | `process.env.name` | Value loaded from Node Process Environment Variable with `name` as the key. |
 | `config.name` | Value loaded from Node Config file `npm install config --save` using `name` as the configuration key. |
 | `=value`      | Value is set equal to the value expressed to the right of the equal sign e.g. `=123` sets the value to `123`. |

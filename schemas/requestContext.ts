@@ -1,6 +1,7 @@
 import { IUserContext } from './iuserContext'
 
 export class RequestContext {
+    id?: string
     baseUrl?: string
     body?: any
     cookies?: any
