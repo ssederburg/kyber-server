@@ -147,55 +147,55 @@ import { ValidatorType e.g. StartsWith, EndsWith } from `kyber-server`
     dataType: 'string',
     whiteList: ['application/json'],
     validators: [
-        function (value) {
+        (value) {
             return StartsWith('test', value)
         },
-        function (value) {
+        (value) => {
             return StartsWithAny(['test', '1', '555'], value)
         },
-        function (value) {
+        (value) => {
             return EndsWith('hey', value)
         },
-        function (value) {
+        (value) => {
             return EndsWithAny(['hey', 'hello', 'welcome'], value)
         },
-        function (value) {
+        (value) => {
             return Length(3, value)
         },
-        function (value) {
+        (value) => {
             return MinLength(1, value)
         },
-        function (value) {
+        (value) => {
             return MaxLength(10, value)
         },
-        function (value) {
+        (value) => {
             return Range(0, 100, value)
         },
-        function (value) {
+        (value) => {
             return Min(0, value)
         },
-        function (value) {
+        (value) => {
             return Max(100, value)
         },
-        function (value) {
+        (value) => {
             return MinDate(new Date('01/01/2000'), value)
         },
-        function (value) {
+        (value) => {
             return MaxDate(new Date('12/31/2030'), value)
         },
-        function (value) {
+        (value) => {
             return IsFloat(value)
         },
-        function (value) {
+        (value) => {
             return IsObject(value)
         },
-        function (value) {
+        (value) => {
             return IsArray(value)
         },
-        function (value) {
+        (value) => {
             return Contains('world', value)
         },
-        function (value) {
+        (value) => {
             return ContainsAny(['world', 'hello', '1'], value)
         }
     ]
