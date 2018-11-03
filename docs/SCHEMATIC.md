@@ -11,7 +11,7 @@ ACTIVITYs themselves.
 Extend the Kyber Schematic Class and assign member properties.
 
 ```
-import { Schematic, Parameter, Activity } from 'kyber-server'
+import { Schematic, Parameter, Activity, ExecutionMode } from 'kyber-server'
 import { DataProvider } from '../common'
 import { HealthCheckComposer } from '../composers'
 
@@ -19,8 +19,8 @@ export class HealthCheckGetSchematic extends Schematic {
 
     id: string = 'HealthCheckSchematic'
     description: string = 'Use GET verb to check the health of the service.'
-    timeout: 10000
     parameters: Array<Parameter> = []
+    timeout: 10000
     sharedResources: Array<any> = [
         DataProvider
     ]
@@ -29,7 +29,7 @@ export class HealthCheckGetSchematic extends Schematic {
     {
         id: 'COMPOSE',
         ordinal: 0,
-        executionMode: 1,
+        executionMode: ExecutionMode.Concurrent,
         processes: [{
             class: HealthCheckComposer
         }],
