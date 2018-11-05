@@ -124,8 +124,8 @@ export { KyberServerEvents} from './events'
 export { Schematic } from './schematics'
 export { KyberServerOptions } from './kyberServerOptions'
 export { RouteOptions } from './routes'
-export { RequestContext, IUserContext, Parameter, BaseDefSchema, 
-    Activity, SharedResourceSchema, ExecutionMode, BaseProcessor } from './schemas'
+export { RequestContext, IUserContext, Parameter, ProcessorDef, 
+    Activity, SharedResource, ExecutionMode, BaseProcessor, ProcessorResponse } from './schemas'
 export { ExecutionContext } from './executionContext'
 export { Utilities } from './utilities/utilities'
 export { StartsWith, StartsWithAny, EndsWith, EndsWithAny, Length, MinLength, MaxLength,

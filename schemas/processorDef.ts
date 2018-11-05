@@ -1,4 +1,4 @@
-export class BaseDefSchema {
+export class ProcessorDef {
     class?: any
     className?: string
     args?: any = {}

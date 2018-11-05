@@ -1,4 +1,4 @@
-export class SharedResourceSchema {
+export class SharedResource {
     name: string
     instanceOfType: any
 }

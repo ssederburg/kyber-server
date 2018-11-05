@@ -1,14 +1,16 @@
 import { ExecutionContext } from "../executionContext";
-import { BaseDefSchema } from "./baseDefSchema";
+import { ProcessorDef, ProcessorResponse } from "./";
 
 export class BaseProcessor {
 
-    constructor(protected executionContext: ExecutionContext, protected baseDefSchema: BaseDefSchema) {
+    constructor(protected executionContext: ExecutionContext, protected processorDef: ProcessorDef) {
 
     }
 
-    public fx(): Promise<boolean> {
-        return Promise.resolve(true)
+    public fx(args: any): Promise<ProcessorResponse> {
+        return Promise.resolve({
+            successful: false
+        })
     }
     
 }

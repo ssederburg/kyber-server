@@ -35,7 +35,7 @@ export class RouteHandler {
 
         // Check if resolver. If so, run it before continuing
         if (options.useResolver && options.resolve) {
-            const testResult:Promise<Schematic>|Schematic|null = await options.resolve(req)
+            const testResult:Promise<typeof Schematic>|typeof Schematic|null = await options.resolve(req)
             if (testResult) {
                 options.schematic = testResult
             }
@@ -52,16 +52,17 @@ export class RouteHandler {
 
         let execContext: ExecutionContext;
         try {
-
-            setTimeout(() => {
+            
+            const schematicInstance = new options.schematic()
+            const timer = setTimeout(() => {
                 if (res.headersSent) return
                 console.log(`Timeout exceeded`)
                 req.timedout = true
                 res.status(408).json('Request timeout')
                 return
-            }, options.schematic.timeout||5000)
+            }, schematicInstance.timeout || 5000)
 
-            execContext = new ExecutionContext(req, options.schematic, options.sharedResources||[])
+            execContext = new ExecutionContext(req, schematicInstance, options.sharedResources||[])
 
             if (req.timedout) return
             await this.beforeEachExecution(server, options, req, res)
@@ -70,9 +71,10 @@ export class RouteHandler {
     
             if (req.timedout) return
             const result = await execContext.execute()
-            if (req.timedout) return
             res.status(execContext.httpStatus).json(result)
             
+            clearTimeout(timer)
+
             // No need to "await" response from afterRun call because response has already been sent to caller.
             if (req.timedout) return
             this.afterEachExecution(server, options, req, res, next)    

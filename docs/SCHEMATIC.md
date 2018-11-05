@@ -53,11 +53,10 @@ export class HealthCheckGetSchematic extends Schematic {
 Before we start the server, we must assign routes to schematics as below. The order these assignments are made is important relative to one another. The PATHs used may or may not take precedent from one another according to any routing implementation limitations e.g. if you create path /api/health/:id and another path /api/health/detail, the :id path will take precedent over the 2nd.
 
 ```
-const healthCheckGetSchematic: HealthCheckGetSchematic = new HealthCheckGetSchematic()
 kyber.registerRoute({
     verb: 'GET',
     path: '/health',
-    schematic: healthCheckGetSchematic,
+    schematic: HealthCheckGetSchematic,
     sharedResources: [
         {
             name: 'dataProvider',

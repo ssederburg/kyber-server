@@ -1,8 +1,9 @@
 import { Schematic } from './schematics'
-import { RequestContext, Parameter, Activity, SharedResourceSchema, ExecutionMode, BaseDefSchema } from './schemas'
+import { RequestContext, Parameter, Activity, SharedResource, ExecutionMode, ProcessorDef, BaseProcessor, ProcessorResponse } from './schemas'
 import { Utilities } from './utilities/utilities'
 
 import * as _ from 'lodash'
+import { TLSSocket } from 'tls';
 
 export class ExecutionContext {
 
@@ -21,7 +22,7 @@ export class ExecutionContext {
 
     private parameters: Array<Parameter> = []
 
-    constructor(public req: RequestContext, public schematic: Schematic, private sharedResources: Array<SharedResourceSchema>) {
+    constructor(public req: RequestContext, public schematic: Schematic, private sharedResources: Array<SharedResource>) {
         this.correlationId = req.id
     }
 
@@ -31,11 +32,9 @@ export class ExecutionContext {
             try {
                 // Evaluate Input Parameters
                 await this.loadParameters()
-
-                this.runActivities(this.schematic.activities).then(() => {
-                    return resolve(this.raw)    
-                })
-
+                await this.runActivities(this.schematic.activities)
+                
+                return resolve(this.raw)
             }
             catch (err) {
                 return reject({
@@ -74,12 +73,18 @@ export class ExecutionContext {
                 let counter = 0
                 _.forEach(_.sortBy(activities, 'ordinal'), async(activityDef: Activity) => {
                     processTasks.push(this.runProcesses(activityDef.processes, activityDef.executionMode))
+                    // TODO: Track ProcessorResponse for httpStatus !== 200
                     await Promise.all(processTasks).then(async() => {
                         await this.runActivities(activityDef.activities)
                         counter = counter + 1
                         if (counter >= activities.length) {
                             return resolve(true)
                         }
+                    }).catch((err) => {
+                        console.log(`ExecutionContext.runActivities.error: ${JSON.stringify(err)}`)
+                        this.errors.push(`ExecutionContext.runActvities.error: ${err.message}`)
+                        this.httpStatus = err.httpStatus
+                        return reject(err)
                     })
                 })
             }
@@ -92,7 +97,7 @@ export class ExecutionContext {
 
     }
 
-    private runProcesses(processes: Array<BaseDefSchema>, executionMode: ExecutionMode): Promise<any> {
+    private runProcesses(processes: Array<ProcessorDef>, executionMode: ExecutionMode): Promise<any> {
 
         const result = new Promise(async(resolve, reject) => {
             try {
@@ -100,11 +105,11 @@ export class ExecutionContext {
                     return resolve(true)
                 }
                 const tasks = []
-                _.forEach(_.sortBy(processes, 'ordinal'), (process: BaseDefSchema) => {
+                _.forEach(_.sortBy(processes, 'ordinal'), (process: ProcessorDef) => {
                     // TODO: Load using Factory with name string
                     if (process.class && !process.className) {
                         const test = new process.class(this, process)
-                        tasks.push(test.fx())
+                        tasks.push(this.tryCatchWrapperForProcess(test, process))
                     }
                 })
                 const response = await Promise.all(tasks)
@@ -112,6 +117,23 @@ export class ExecutionContext {
                     return resolve(false)
                 }
                 return resolve(true)
+            }
+            catch (err) {
+                console.log(`ExecutionContext.runProcesses.error: ${JSON.stringify(err, null, 1)}`)
+                return reject(err)
+            }
+        })
+
+        return result
+
+    }
+
+    private tryCatchWrapperForProcess(processor: BaseProcessor, process: ProcessorDef): Promise<ProcessorResponse> {
+        
+        const result: Promise<ProcessorResponse> = new Promise(async(resolve, reject) => {
+            try {
+                const response = await processor.fx(process.args)
+                return resolve(response)
             }
             catch (err) {
                 return reject(err)

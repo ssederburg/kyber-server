@@ -1,10 +1,10 @@
-import { BaseDefSchema, ExecutionMode } from './'
+import { ProcessorDef, ExecutionMode } from './'
 
 export class Activity {
     id: string = ''
     condition?: string = ''
     ordinal: number = 0
     executionMode?: ExecutionMode = ExecutionMode.Sequential
-    processes?: Array<BaseDefSchema> = []
+    processes?: Array<ProcessorDef> = []
     activities?: Array<Activity> = []
 }
