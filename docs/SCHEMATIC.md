@@ -69,8 +69,10 @@ kyber.registerRoute({
 |---------------|------------------------------------|
 | `verb`          | GET, POST, PUT, DELETE, PURGE and any other verb supported by connect middleware. Here is a [List](https://expressjs.com/en/4x/api.html#app.METHOD) of supported verbs. |
 | `path`          | Path used to identify the Route. Follows normal Router path convention e.g. `/some/path/:parameter` where `:parameter` becomes `req.params.parameter`. |
-| `schematic`     | Instance of the Schematic class to assign to the Route. |
+| `schematic`     | Type Of the Schematic class to assign to the Route. |
 | `sharedResources` | An array of name and value pairs of a unique key name for the shared resource to be consumed alongside its INSTANCE of the class (Singleton). Consumers executed by Execution context are able to retrieve the instance of the singleton using the convention `this.executionContext.getSharedResource(name)`. |
+| `useResolver`   | Boolean of true of false (Optional and Defaults to false). Instructs the Route Handler to fire the resolver for each request to determine the Schematic Type at runtime. Use the `resolver()` method (Optional and Below) to return a type of Schematic based on the Request Object. |
+| `resolve()`    | If `useResolver` is set to `true`, the Route Options MUST contain a `resolve()` method. This method takes the following signature `public resolve?(req: RequestContext): Promise<typeof Schematic>|typeof Schematic|null` and should be implemented as a method on the Route Option itself. The method should return a TYPE of Schematic using values from the `RequestContext` variable passed to the method at runtime. |
 
 
 #### Schematic with Parameters
