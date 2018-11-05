@@ -20,7 +20,7 @@ export class HealthCheckGetSchematic extends Schematic {
     id: string = 'HealthCheckSchematic'
     description: string = 'Use GET verb to check the health of the service.'
     parameters: Array<Parameter> = []
-    timeout: 10000
+    timeout: number = 10000
     sharedResources: Array<any> = [
         DataProvider
     ]
