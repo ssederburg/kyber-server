@@ -72,7 +72,7 @@ kyber.registerRoute({
 | `schematic`     | *Ignored/Optional If using resolver* Type Of the Schematic class to assign to the Route. |
 | `sharedResources` | *Optional* An array of name and value pairs of a unique key name for the shared resource to be consumed alongside its INSTANCE of the class (Singleton). Consumers executed by Execution context are able to retrieve the instance of the singleton using the convention `this.executionContext.getSharedResource(name)`. |
 | `useResolver`   | *Optional* Boolean of true of false (Defaults to false). Instructs the Route Handler to fire the resolver for each request to determine the Schematic Type at runtime. Use the `resolver()` method (Optional and Below) to return a type of Schematic based on the Request Object. |
-| `resolve()`    | *Optional* If `useResolver` is set to `true`, the Route Options MUST contain a `resolve()` method. This method takes the following signature <code>public resolve?(req: RequestContext): Promise<\typeof Schematic>\|typeof Schematic\|null</code> and should be implemented as a method on the Route Option itself. The method should return a TYPE of Schematic using values from the `RequestContext` variable passed to the method at runtime. |
+| `resolve()`    | *Optional* If `useResolver` is set to `true`, the Route Options MUST contain a `resolve()` method. This method takes the following signature <code>public resolve?(req: RequestContext): Promise``<typeof Schematic>``\|typeof Schematic\|null</code> and should be implemented as a method on the Route Option itself. The method should return a TYPE of Schematic using values from the `RequestContext` variable passed to the method at runtime. |
 
 
 #### Schematic with Parameters
