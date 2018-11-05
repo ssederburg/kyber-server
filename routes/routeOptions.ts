@@ -1,4 +1,5 @@
 import { Schematic } from '../schematics'
+import { RequestContext } from '../schemas'
 
 export class RouteOptions {
     verb: string = 'GET'
@@ -8,7 +9,7 @@ export class RouteOptions {
     useResolver?: boolean = false
     sharedResources?: Array<any> = []
     
-    public resolve?(req: Express.Request|any): Promise<typeof Schematic>|typeof Schematic|null {
+    public resolve?(req: RequestContext): Promise<typeof Schematic>|typeof Schematic|null {
         return null
     }
 
