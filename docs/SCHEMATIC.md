@@ -41,10 +41,10 @@ export class HealthCheckGetSchematic extends Schematic {
 | Field         | Description                       |
 |---------------|-----------------------------------|
 | `id`            | Any string value. Unique identifier for the schematic. Does not have to relate to the class used.|
-| `description`   | Description for the schematic |
-| `timeout`       | Optional timeout in milliseconds to allow a schematic to run before returning http status 408 Request Timed Out. Default is 5000 milliseconds (5 seconds). |
-| `parameters`    | see PARAMETERS section below |
-| `sharedResources` | List of Types required as Shared Resources. Verified by Execution Context to ensure shared resources are passed properly. |
+| `description`   | *Optional* Description for the schematic |
+| `timeout`       | *Optional* Optional timeout in milliseconds to allow a schematic to run before returning http status 408 Request Timed Out. Default is 5000 milliseconds (5 seconds). |
+| `parameters`    | *Optional* see PARAMETERS section below |
+| `sharedResources` | *Optional* List of Types required as Shared Resources. Verified by Execution Context to ensure shared resources are passed properly. |
 | `activities`    | Array of ACTIVITY Objects. |
 
 
@@ -69,10 +69,10 @@ kyber.registerRoute({
 |---------------|------------------------------------|
 | `verb`          | GET, POST, PUT, DELETE, PURGE and any other verb supported by connect middleware. Here is a [List](https://expressjs.com/en/4x/api.html#app.METHOD) of supported verbs. |
 | `path`          | Path used to identify the Route. Follows normal Router path convention e.g. `/some/path/:parameter` where `:parameter` becomes `req.params.parameter`. |
-| `schematic`     | Type Of the Schematic class to assign to the Route. |
-| `sharedResources` | An array of name and value pairs of a unique key name for the shared resource to be consumed alongside its INSTANCE of the class (Singleton). Consumers executed by Execution context are able to retrieve the instance of the singleton using the convention `this.executionContext.getSharedResource(name)`. |
-| `useResolver`   | Boolean of true of false (Optional and Defaults to false). Instructs the Route Handler to fire the resolver for each request to determine the Schematic Type at runtime. Use the `resolver()` method (Optional and Below) to return a type of Schematic based on the Request Object. |
-| `resolve()`    | If `useResolver` is set to `true`, the Route Options MUST contain a `resolve()` method. This method takes the following signature `public resolve?(req: RequestContext): Promise<typeof Schematic>|typeof Schematic|null` and should be implemented as a method on the Route Option itself. The method should return a TYPE of Schematic using values from the `RequestContext` variable passed to the method at runtime. |
+| `schematic`     | *Ignored/Optional If using resolver* Type Of the Schematic class to assign to the Route. |
+| `sharedResources` | *Optional* An array of name and value pairs of a unique key name for the shared resource to be consumed alongside its INSTANCE of the class (Singleton). Consumers executed by Execution context are able to retrieve the instance of the singleton using the convention `this.executionContext.getSharedResource(name)`. |
+| `useResolver`   | *Optional* Boolean of true of false (Defaults to false). Instructs the Route Handler to fire the resolver for each request to determine the Schematic Type at runtime. Use the `resolver()` method (Optional and Below) to return a type of Schematic based on the Request Object. |
+| `resolve()`    | *Optional* If `useResolver` is set to `true`, the Route Options MUST contain a `resolve()` method. This method takes the following signature `public resolve?(req: RequestContext): Promise<typeof Schematic>|typeof Schematic|null` and should be implemented as a method on the Route Option itself. The method should return a TYPE of Schematic using values from the `RequestContext` variable passed to the method at runtime. |
 
 
 #### Schematic with Parameters
@@ -103,11 +103,11 @@ When expecting parameters to be passed or used by the Schematic, you must declar
 |---------------|-----------------------------------|
 | `name`          | The name of the field to be referenced when requested from the Execution Context using the convention `this.executionContext.getParameterValue('wkt')` |
 | `source`        | How to load the value of this parameter from the Request Context or Execution Context. For a full list of acceptable sources, see below. |
-| `required`      | When set to true, if a value cannot be determined for the field, an Invalid Request (http status 400) error will be raised. |
-| `dataType`      | Validate the data type of the value passed and resolved. Valid data types include `string`, `number`, `date` and `boolean` |
-| `whiteList`     | An array of values to compare against the resolved value. If the value provided is NOT in this list an Invalid Request (http status 400) error will be raised. |
-| `blackList`     | An array of values to compare against the resolved value. If the value provided IS in this list an Invalid Request (http status 400) error will be raised. |
-| `validators`    | An array of functions to which the resolved value is passed. Function must return a boolean of TRUE it is value or FALSE if it is not. A list of common Validators is also provided (see below). |
+| `required`      | *Optional* When set to true, if a value cannot be determined for the field, an Invalid Request (http status 400) error will be raised. |
+| `dataType`      | *Optional* Validate the data type of the value passed and resolved. Valid data types include `string`, `number`, `date` and `boolean` |
+| `whiteList`     | *Optional* An array of values to compare against the resolved value. If the value provided is NOT in this list an Invalid Request (http status 400) error will be raised. |
+| `blackList`     | *Optional* An array of values to compare against the resolved value. If the value provided IS in this list an Invalid Request (http status 400) error will be raised. |
+| `validators`    | *Optional* An array of functions to which the resolved value is passed. Function must return a boolean of TRUE it is value or FALSE if it is not. A list of common Validators is also provided (see below). |
 
 Sources for a Parameter can be expressed using the following values. You may separate multiple `expressions` using a double pipe delimiter `||`. In the event a null value is returned for any expression, the next expression will be evaluated until either a value is realized or no more expressions exist.
 
