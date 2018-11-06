@@ -7,4 +7,5 @@ export class SchematicResponse extends ProcessorDef {
     resolve?(executionContext: ExecutionContext): Promise<typeof BaseProcessor>|typeof BaseProcessor|null {
         return null
     }
+    schema?: any = {}
 }

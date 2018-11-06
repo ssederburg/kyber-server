@@ -5,4 +5,5 @@ export class ProcessorDef {
     className?: string
     args?: any = {}
     ordinal?: number = 0
+    description?: string = null
 }
