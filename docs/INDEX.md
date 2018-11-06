@@ -2,4 +2,4 @@
 
 [Schematic](./SCHEMATIC.md)
 
-![Kyber Flow](./docs/images/kyber-flow.png)
+![Kyber Flow](./images/kyber-flow.png)
