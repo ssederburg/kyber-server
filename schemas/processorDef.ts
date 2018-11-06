@@ -1,5 +1,7 @@
+import { BaseProcessor } from './baseProcessor'
+
 export class ProcessorDef {
-    class?: any
+    class?: typeof BaseProcessor
     className?: string
     args?: any = {}
     ordinal?: number = 0

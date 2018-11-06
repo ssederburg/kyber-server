@@ -1,9 +1,10 @@
 import { Schematic } from './schematics'
-import { RequestContext, Parameter, Activity, SharedResource, ExecutionMode, ProcessorDef, BaseProcessor, ProcessorResponse } from './schemas'
+import { RequestContext, Parameter, Activity, SharedResource, 
+    ExecutionMode, ProcessorDef, BaseProcessor, ProcessorResponse, SchematicResponse } from './schemas'
 import { Utilities } from './utilities/utilities'
 
 import * as _ from 'lodash'
-import { TLSSocket } from 'tls';
+import { RawResponse, ErrorResponse } from './responses';
 
 export class ExecutionContext {
 
@@ -21,6 +22,7 @@ export class ExecutionContext {
     public results = []
 
     private parameters: Array<Parameter> = []
+    private wasOneCriticalFailure: boolean = false
 
     constructor(public req: RequestContext, public schematic: Schematic, private sharedResources: Array<SharedResource>) {
         this.correlationId = req.id
@@ -34,14 +36,19 @@ export class ExecutionContext {
                 await this.loadParameters()
                 await this.runActivities(this.schematic.activities)
                 
-                return resolve(this.raw)
+                const response = await this.respond()
+                return resolve(response)
             }
             catch (err) {
-                return reject({
-                    httpStatus: this.httpStatus,
-                    errors: this.errors,
-                    warnings: this.warnings
-                })
+                if (!this.wasOneCriticalFailure) {
+                    this.wasOneCriticalFailure = true
+                    const response = await this.respond()
+                    console.log(`executionContext.execute.error: Throwing ${JSON.stringify(response, null, 1)}`)
+                    return reject(response)
+                }
+                const response = await this.errorResponse()
+                console.log(`executionContext.execute.error: Throwing ${JSON.stringify(response, null, 1)}`)
+                return reject(response)
             }
         })
 
@@ -59,7 +66,6 @@ export class ExecutionContext {
         if (!theTypeRecord) return null
         return theTypeRecord.instanceOfType
     }
-
 
     private runActivities(activities: Array<Activity>): Promise<any> {
 
@@ -120,6 +126,35 @@ export class ExecutionContext {
             }
             catch (err) {
                 console.log(`ExecutionContext.runProcesses.error: ${JSON.stringify(err, null, 1)}`)
+                return reject(err)
+            }
+        })
+
+        return result
+
+    }
+
+    private respond(): Promise<any> {
+
+        const result = new Promise(async(resolve, reject) => {
+            try {
+                let theType: typeof BaseProcessor = null
+                const test: SchematicResponse = _.find(this.schematic.responses, { httpStatus: this.httpStatus})
+                if (!test) {
+                    console.log(`kyber-server.executionContext.respond.error: no record of response for http status ${this.httpStatus}`)
+                    theType = RawResponse
+                } else {
+                    // TODO: Implement resolve
+                    theType = test.class
+                }
+                // TODO: Load from String using Factory
+                const task = new theType(this, test)
+                const response = await this.tryCatchWrapperForProcess(task, test)
+                return resolve(response.data || response)
+            }
+            catch (err) {
+                // TODO: Need some default error response
+                this.errors.push(`kyber-server.executionContext.respond().error`)
                 return reject(err)
             }
         })
@@ -219,4 +254,28 @@ export class ExecutionContext {
 
     }
 
+    private errorResponse(): Promise<any> {
+
+        const result = new Promise(async(resolve, reject) => {
+            try {
+                const test = {
+                    class: ErrorResponse
+                }
+                const task = new ErrorResponse(this, test)
+                const response = await this.tryCatchWrapperForProcess(task, test)
+                return resolve(response.data || response)
+            }
+            catch (err) {
+                const test = Object.assign({}, {
+                    httpStatus: this.httpStatus || 500,
+                    errors: this.errors || ['Unknown Error'],
+                    warnings: this.warnings || []
+                })
+                return resolve(test)
+            }
+        })
+
+        return result
+
+    }
 }

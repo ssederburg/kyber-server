@@ -1,4 +1,4 @@
-import { Parameter, Activity } from '../schemas'
+import { Parameter, Activity, SchematicResponse } from '../schemas'
 
 export class Schematic {
     id: string
@@ -6,6 +6,7 @@ export class Schematic {
     parameters?: Array<Parameter> = []
     timeout?: number = 5000
     activities: Array<Activity> = []
+    responses: Array<SchematicResponse> = []
 }
 // initialize
 // shared resources
