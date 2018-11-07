@@ -7,6 +7,7 @@ export class Schematic {
     timeout?: number = 5000
     activities: Array<Activity> = []
     responses: Array<SchematicResponse> = []
+    resources?: Array<any> = []
 }
 // initialize
 // shared resources

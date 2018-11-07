@@ -6,7 +6,7 @@ const EventEmitter = require('events')
 
 import {KyberServerEvents} from './events'
 import {RouteHandler, RouteOptions} from './routes'
-import {Schematic} from './schematics'
+import {Schematic, GlobalSchematic} from './schematics'
 import {KyberServerOptions} from './'
 import * as _ from 'lodash'
 const env = require("dotenv").config()
@@ -20,6 +20,7 @@ export class KyberServer {
     private server = express()
     private isStarted: boolean = false
     private shuttingDown: boolean = false
+    private globalSchematic: typeof GlobalSchematic = null
     
     public events = new EventEmitter()
 
@@ -29,6 +30,10 @@ export class KyberServer {
             req.id = uuidv4()
             return next()
         })
+    }
+
+    public registerGlobalSchematic(schematic: typeof GlobalSchematic, sharedResources: Array<any> = []) {
+        this.globalSchematic = schematic
     }
 
     public registerHandler(verb: string, path: string, handler: any) {
@@ -121,7 +126,7 @@ export class KyberServer {
 }
 
 export { KyberServerEvents} from './events'
-export { Schematic } from './schematics'
+export { Schematic, GlobalSchematic } from './schematics'
 export { KyberServerOptions } from './kyberServerOptions'
 export { RouteOptions } from './routes'
 export { RequestContext, IUserContext, Parameter, ProcessorDef, 
@@ -130,4 +135,4 @@ export { ExecutionContext } from './executionContext'
 export { Utilities } from './utilities/utilities'
 export { StartsWith, StartsWithAny, EndsWith, EndsWithAny, Length, MinLength, MaxLength,
     Range, Min, Max, MinDate, MaxDate, IsFloat, IsObject, IsArray, Contains, ContainsAny } from './validators'
-export { RawResponse } from './responses'
+export { RawResponse, ErrorResponse } from './responses'
