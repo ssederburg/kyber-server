@@ -1,9 +1,11 @@
 import * as Express from 'express'
-import { Schematic, RequestContext } from "..";
+import { Schematic, RequestContext, KyberServer } from "..";
 import { RouteOptions } from './'
 import * as config from 'config'
 import { ExecutionContext } from '../executionContext';
 import { Utilities } from '../utilities/utilities';
+
+import * as _ from 'lodash'
 
 export class RouteHandler {
 
@@ -29,7 +31,7 @@ export class RouteHandler {
     }
     //#endregion
 
-    private async execute(server: Express.Application, options: RouteOptions,
+    private async execute(server: Express.Application, options: RouteOptions, 
         req: RequestContext, res: Express.Response, 
         next: Express.NextFunction) {
 
@@ -42,33 +44,28 @@ export class RouteHandler {
         }
         if (!options.schematic) {
             console.log(`Attempted to execute route ${req.path} without a valid schematic. Route ignored.`)
-            // TODO: Common Error Handling Default Response from Kyber
-            res.status(400).send({
-                httpStatus: 400,
-                message: 'Invalid Request. Missing schematic.'
-            })
-            return
+            const response = await this.throwError(req, 400, `Invalid Request. Missing Schematic.`, options, next)
+            return res.status(400).json(response)
         }
 
         let execContext: ExecutionContext;
         try {
             
             const schematicInstance = new options.schematic()
-            const timer = setTimeout(() => {
+            const timer = setTimeout(async() => {
                 if (res.headersSent) return
-                console.log(`Timeout exceeded`)
+                console.log(`Timeout exceeded on path ${req.path}`)
                 req.timedout = true
-                res.status(408).json('Request timeout')
-                return
+                const response = await this.throwError(req, 400, `Request Timed Out.`, options, next)
+                return res.status(408).json(response)
             }, schematicInstance.timeout || 5000)
 
             execContext = new ExecutionContext(req, schematicInstance, options.sharedResources||[])
 
             if (req.timedout) return
             await this.beforeEachExecution(server, options, req, res)
-            // How to return an error from here - return next({httpStatus: 500, message: 'Did not work'})
-            // If returning an error in JSON, make sure header for JSON is set
-    
+            // How to return an error from here - return next('Did not work')
+            
             if (req.timedout) return
             const result = await execContext.execute()
             res.status(execContext.httpStatus).json(result)
@@ -81,16 +78,20 @@ export class RouteHandler {
 
         }
         catch (err) {
-            // TODO: ERROR RESPONSE FROM SCHEMATIC
             if (res.headersSent) return
-            if (Utilities.isString(err)) {
-                if (err.indexOf('timeout') >= 0) {
-                    return res.status(408).json(err)
-                }
+            if (!Utilities.isString(err)) {
+                // The Error Response has already been composed by Execution Context
+                const httpStatus = execContext.httpStatus === 200 ? 500 : execContext.httpStatus
+                return res.status(httpStatus).json(err)
             }
-            res.status(execContext.httpStatus).json(err)
+            let message = err
+            let httpStatus = message.indexOf('timeout') >= 0 ? 408 : execContext.httpStatus
+            // We assumed the httpStatus was changed because of an error. But in case it still says OK, make it INTERNAL SERVER ERROR
+            if (httpStatus === 200) httpStatus = 500
+            const response = await this.throwError(req, httpStatus, message, options, next)
+            return res.status(httpStatus).json(response)
         }
-
+        
     }
 
     private beforeEachExecution(server: Express.Application, options: RouteOptions, 
@@ -110,6 +111,26 @@ export class RouteHandler {
             return Promise.resolve(true)
         }
         return Promise.resolve(true)
+
+    }
+
+    private throwError(req: RequestContext, httpStatus: number, message: string, options: RouteOptions, next: Express.NextFunction): Promise<any> {
+
+        const result = new Promise(async(resolve, reject) => {
+            try {
+                const kyberServerTest = _.find(options.sharedResources, { name: 'kyberServer' })
+                if (!kyberServerTest) {
+                    return next(message)
+                }
+                const response = await kyberServerTest.instanceOfType.throwGlobalSchematicError(req, httpStatus, message)
+                return resolve(response)
+            }
+            catch (err) {
+                return next(err)
+            }
+        })
+
+        return result
 
     }
 }

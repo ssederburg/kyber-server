@@ -113,12 +113,15 @@ export class ExecutionContext {
                 const tasks = []
                 _.forEach(_.sortBy(processes, 'ordinal'), (process: ProcessorDef) => {
                     // TODO: Load using Factory with name string
+                    // TODO: Sequential vs. Concurrent
                     if (process.class && !process.className) {
                         const test = new process.class(this, process)
                         tasks.push(this.tryCatchWrapperForProcess(test, process))
                     }
                 })
                 const response = await Promise.all(tasks)
+                // TODO: Check ProcessorResponse for httpStatus !== 200
+                // TODO: Return a Processor Response consolidation
                 if (response.indexOf(false) >= 0) {
                     return resolve(false)
                 }
@@ -139,8 +142,9 @@ export class ExecutionContext {
         const result = new Promise(async(resolve, reject) => {
             try {
                 let theType: typeof BaseProcessor = null
-                const test: SchematicResponse = _.find(this.schematic.responses, { httpStatus: this.httpStatus})
+                const test: SchematicResponse = _.find(this.schematic.responses, { httpStatus: this.httpStatus })
                 if (!test) {
+                    // TODO: Lookup from global schematic
                     console.log(`kyber-server.executionContext.respond.error: no record of response for http status ${this.httpStatus}`)
                     theType = RawResponse
                 } else {
@@ -153,7 +157,6 @@ export class ExecutionContext {
                 return resolve(response.data || response)
             }
             catch (err) {
-                // TODO: Need some default error response
                 this.errors.push(`kyber-server.executionContext.respond().error`)
                 return reject(err)
             }

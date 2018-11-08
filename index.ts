@@ -21,6 +21,7 @@ export class KyberServer {
     private isStarted: boolean = false
     private shuttingDown: boolean = false
     private globalSchematic: typeof GlobalSchematic = null
+    private sharedResources: Array<any> = []
     
     public events = new EventEmitter()
 
@@ -34,6 +35,7 @@ export class KyberServer {
 
     public registerGlobalSchematic(schematic: typeof GlobalSchematic, sharedResources: Array<any> = []) {
         this.globalSchematic = schematic
+        this.sharedResources = sharedResources
     }
 
     public registerHandler(verb: string, path: string, handler: any) {
@@ -55,6 +57,13 @@ export class KyberServer {
         }
 
         const routeHandler = new RouteHandler()
+        if (!options.sharedResources) {
+            options.sharedResources = []
+        }
+        options.sharedResources.push({
+            name: 'kyberServer',
+            instanceOfType: this
+        })
         routeHandler.register(this.server, options)
 
     }
@@ -66,25 +75,23 @@ export class KyberServer {
 
         this.events.emit('starting')
         
-        this.server.use((err, req, res, next) => {
+        this.server.use(async(err, req, res, next) => {
             if (err) {
-                // TODO: Custom Error handler
                 console.log('500: ' + err)
                 if (res.headersSent) {
                     return
                 }
-                res.status(500)
-                res.send(err)
-                return
+                res.header('X-Powered-By', 'kyber')
+                const response = await this.throwGlobalSchematicError(req, 500, `Unhandled Exception in service: ${req.path}: ${err}`)
+                return res.status(500).json(response)
             }
-            console.log('400')
             next(err)
         })
 
-        this.server.use((req, res, next) => {
-            // TODO: Handle 404 Errors
-            console.log('404')
-            return res.status(404).send()
+        this.server.use(async(req, res, next) => {
+            res.header('X-Powered-By', 'kyber')
+            const response = await this.throwGlobalSchematicError(req, 404, `Unable to locate path ${req.path}`)
+            return res.status(404).json(response)
         })
 
         this.server.listen(this.options.port, err => {
@@ -123,6 +130,27 @@ export class KyberServer {
         process.exit(0)
 
     }
+
+    public throwGlobalSchematicError(req: RequestContext, httpStatus: number, errText: string): Promise<any> {
+
+        const result = new Promise(async(resolve, reject) => {
+            try {
+                const executionContext = new ExecutionContext(req, new this.globalSchematic(), null)
+                executionContext.httpStatus = httpStatus
+                executionContext.raw = errText
+                executionContext.errors.push(errText)
+                const response = await executionContext.execute()
+                return resolve(response)
+            }
+            catch (err) {
+                // TODO: What do we do with rejections from GlobalExecutionContext execution?
+                return resolve()
+            }    
+        })
+
+        return result
+
+    }
 }
 
 export { KyberServerEvents} from './events'
@@ -133,6 +161,5 @@ export { RequestContext, IUserContext, Parameter, ProcessorDef,
     Activity, SharedResource, ExecutionMode, BaseProcessor, ProcessorResponse, SchematicResponse } from './schemas'
 export { ExecutionContext } from './executionContext'
 export { Utilities } from './utilities/utilities'
-export { StartsWith, StartsWithAny, EndsWith, EndsWithAny, Length, MinLength, MaxLength,
-    Range, Min, Max, MinDate, MaxDate, IsFloat, IsObject, IsArray, Contains, ContainsAny } from './validators'
+export * from './validators'
 export { RawResponse, ErrorResponse } from './responses'
