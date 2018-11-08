@@ -11,7 +11,7 @@ import {KyberServerOptions} from './'
 import * as _ from 'lodash'
 const env = require("dotenv").config()
 import * as config from 'config'
-import { RequestContext } from './schemas';
+import { RequestContext, SchematicResponse } from './schemas';
 import { ExecutionContext } from './executionContext';
 const uuidv4 = require('uuid/v4')
 
@@ -121,6 +121,23 @@ export class KyberServer {
         // TODO: Call Shutdown on all routes
         this.events.emit(KyberServerEvents.ServerStopped)
         process.exit(0)
+
+    }
+
+    public getGlobalSchematicResponse(httpStatus: number): SchematicResponse {
+
+        if (!this.globalSchematic) return null
+        const global = new this.globalSchematic()
+        const test = _.find(global.responses, { httpStatus: httpStatus })
+        if (test) {
+            return test
+        }
+        // Finally Search for default wildcard of 0
+        const lastChance = _.find(global.responses, { httpStatus: 0 })
+        if (lastChance) {
+            return lastChance
+        }
+        return null
 
     }
 

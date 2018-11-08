@@ -170,9 +170,13 @@ export class ExecutionContext {
                 let theType: typeof BaseProcessor = null
                 const test: SchematicResponse = _.find(this.schematic.responses, { httpStatus: this.httpStatus })
                 if (!test) {
-                    // TODO: Lookup from global schematic
-                    console.log(`kyber-server.executionContext.respond.error: no record of response for http status ${this.httpStatus}`)
-                    theType = RawResponse
+                    const globalTest = this.kyberServer.getGlobalSchematicResponse(this.httpStatus)
+                    if (!globalTest) {
+                        console.log(`kyber-server.executionContext.respond.error: no record of response for http status ${this.httpStatus}`)
+                        theType = RawResponse
+                    } else {
+                        theType = globalTest.class
+                    }
                 } else {
                     // TODO: Implement resolve
                     theType = test.class
@@ -196,7 +200,7 @@ export class ExecutionContext {
         
         const result: Promise<ProcessorResponse> = new Promise(async(resolve, reject) => {
             try {
-                const response = await processor.fx(process.args)
+                const response = await processor.fx(process ? process.args : null)
                 return resolve(response)
             }
             catch (err) {
