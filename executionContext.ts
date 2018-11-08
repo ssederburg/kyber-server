@@ -49,7 +49,7 @@ export class ExecutionContext {
                     return reject(response)
                 }
                 const response = await this.errorResponse()
-                console.log(`executionContext.execute.error: Throwing ${JSON.stringify(response, null, 1)}`)
+                console.log(`executionContext.execute.error.secondchance: Throwing ${JSON.stringify(response, null, 1)}`)
                 return reject(response)
             }
         })
@@ -168,14 +168,14 @@ export class ExecutionContext {
         const result = new Promise(async(resolve, reject) => {
             try {
                 let theType: typeof BaseProcessor = null
-                const test: SchematicResponse = _.find(this.schematic.responses, { httpStatus: this.httpStatus })
+                let test: SchematicResponse = _.find(this.schematic.responses, { httpStatus: this.httpStatus })
                 if (!test) {
-                    const globalTest = this.kyberServer.getGlobalSchematicResponse(this.httpStatus)
-                    if (!globalTest) {
+                    test = this.kyberServer.getGlobalSchematicResponse(this.httpStatus)
+                    if (!test) {
                         console.log(`kyber-server.executionContext.respond.error: no record of response for http status ${this.httpStatus}`)
                         theType = RawResponse
                     } else {
-                        theType = globalTest.class
+                        theType = test.class
                     }
                 } else {
                     // TODO: Implement resolve
