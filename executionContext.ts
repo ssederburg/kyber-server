@@ -2,6 +2,8 @@ import { Schematic } from './schematics'
 import { RequestContext, Parameter, Activity, SharedResource, 
     ExecutionMode, ProcessorDef, BaseProcessor, ProcessorResponse, SchematicResponse } from './schemas'
 import { Utilities } from './utilities/utilities'
+import { KyberServerEvents } from './events'
+import { KyberServer } from './'
 
 import * as _ from 'lodash'
 import { RawResponse, ErrorResponse } from './responses';
@@ -24,7 +26,7 @@ export class ExecutionContext {
     private parameters: Array<Parameter> = []
     private wasOneCriticalFailure: boolean = false
 
-    constructor(public req: RequestContext, public schematic: Schematic, private sharedResources: Array<SharedResource>) {
+    constructor(public req: RequestContext, public schematic: Schematic, private sharedResources: Array<SharedResource>, private kyberServer: KyberServer) {
         this.correlationId = req.id
     }
 
@@ -78,12 +80,22 @@ export class ExecutionContext {
                 const processTasks = []
                 let counter = 0
                 _.forEach(_.sortBy(activities, 'ordinal'), async(activityDef: Activity) => {
-                    processTasks.push(this.runProcesses(activityDef.processes, activityDef.executionMode))
+                    this.kyberServer.events.emit(KyberServerEvents.ActivityStarted, {
+                        schematic: this.schematic.id,
+                        activity: activityDef.id,
+                        correlationId: this.correlationId
+                    })
+                    processTasks.push(this.runProcesses(activityDef.id, activityDef.processes, activityDef.executionMode))
                     // TODO: Track ProcessorResponse for httpStatus !== 200
                     await Promise.all(processTasks).then(async() => {
                         await this.runActivities(activityDef.activities)
                         counter = counter + 1
                         if (counter >= activities.length) {
+                            this.kyberServer.events.emit(KyberServerEvents.ActivityEnded, {
+                                schematic: this.schematic.id,
+                                activity: activityDef.id,
+                                correlationId: this.correlationId
+                            })
                             return resolve(true)
                         }
                     }).catch((err) => {
@@ -103,7 +115,7 @@ export class ExecutionContext {
 
     }
 
-    private runProcesses(processes: Array<ProcessorDef>, executionMode: ExecutionMode): Promise<any> {
+    private runProcesses(activityId: string, processes: Array<ProcessorDef>, executionMode: ExecutionMode): Promise<any> {
 
         const result = new Promise(async(resolve, reject) => {
             try {
@@ -112,11 +124,25 @@ export class ExecutionContext {
                 }
                 const tasks = []
                 _.forEach(_.sortBy(processes, 'ordinal'), (process: ProcessorDef) => {
+                    this.kyberServer.events.emit(KyberServerEvents.ProcessorStarted, {
+                        schematic: this.schematic.id,
+                        activity: activityId,
+                        processor: process.class.name.toString(),
+                        correlationId: this.correlationId
+                    })
                     // TODO: Load using Factory with name string
                     // TODO: Sequential vs. Concurrent
                     if (process.class && !process.className) {
                         const test = new process.class(this, process)
-                        tasks.push(this.tryCatchWrapperForProcess(test, process))
+                        tasks.push(this.tryCatchWrapperForProcess(test, process).then((response) => {
+                            this.kyberServer.events.emit(KyberServerEvents.ProcessorEnded, {
+                                schematic: this.schematic.id,
+                                activity: activityId,
+                                processor: process.class.name.toString(),
+                                correlationId: this.correlationId,
+                                response: Object.assign({}, response)
+                            })
+                        }))
                     }
                 })
                 const response = await Promise.all(tasks)
@@ -188,6 +214,11 @@ export class ExecutionContext {
             try {
                 let wasOneInvalid = false
                 if (this.schematic && this.schematic.parameters && this.schematic.parameters.length > 0) {
+                    this.kyberServer.events.emit(KyberServerEvents.ExecutionContextBeforeLoadParameters, {
+                        schematic: this.schematic.id,
+                        parameters: Object.assign({}, this.schematic.parameters),
+                        correlationId: this.correlationId
+                    })
                     _.forEach(this.schematic.parameters, (parameter: Parameter) => {
                         const value = Utilities.evalExpression(parameter.source, this.req)
                         parameter.isValid = true
@@ -238,6 +269,11 @@ export class ExecutionContext {
                             const newParam = Object.assign({}, parameter, {value: value})
                             this.parameters.push(newParam)
                         }
+                    })
+                    this.kyberServer.events.emit(KyberServerEvents.ExecutionContextAfterLoadParameters, {
+                        schematic: this.schematic.id,
+                        parameters: Object.assign({}, this.parameters),
+                        correlationId: this.correlationId
                     })
                     if (wasOneInvalid) {
                         this.httpStatus = 400

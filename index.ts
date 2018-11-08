@@ -56,14 +56,7 @@ export class KyberServer {
             return
         }
 
-        const routeHandler = new RouteHandler()
-        if (!options.sharedResources) {
-            options.sharedResources = []
-        }
-        options.sharedResources.push({
-            name: 'kyberServer',
-            instanceOfType: this
-        })
+        const routeHandler = new RouteHandler(this)
         routeHandler.register(this.server, options)
 
     }
@@ -73,7 +66,7 @@ export class KyberServer {
         if (this.isStarted) return
         this.isStarted = true
 
-        this.events.emit('starting')
+        this.events.emit(KyberServerEvents.ServerStarting)
         
         this.server.use(async(err, req, res, next) => {
             if (err) {
@@ -135,11 +128,20 @@ export class KyberServer {
 
         const result = new Promise(async(resolve, reject) => {
             try {
-                const executionContext = new ExecutionContext(req, new this.globalSchematic(), null)
+                const executionContext = new ExecutionContext(req, new this.globalSchematic(), this.sharedResources, this)
                 executionContext.httpStatus = httpStatus
                 executionContext.raw = errText
                 executionContext.errors.push(errText)
                 const response = await executionContext.execute()
+                this.events.emit(KyberServerEvents.GlobalSchematicError, {
+                    path: req.path,
+                    method: req.method,
+                    body: req.body,
+                    params: req.params,
+                    query: req.query,
+                    httpStatus: httpStatus,
+                    message: errText
+                })
                 return resolve(response)
             }
             catch (err) {

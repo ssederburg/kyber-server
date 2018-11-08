@@ -2,12 +2,15 @@ import * as Express from 'express'
 import { Schematic, RequestContext, KyberServer } from "..";
 import { RouteOptions } from './'
 import * as config from 'config'
-import { ExecutionContext } from '../executionContext';
-import { Utilities } from '../utilities/utilities';
+import { ExecutionContext } from '../executionContext'
+import { Utilities } from '../utilities/utilities'
+import { KyberServerEvents } from '../events'
 
 import * as _ from 'lodash'
 
 export class RouteHandler {
+
+    constructor(private kyberServer: KyberServer) {}
 
     //#region Server Method Implementation
     public register(server: Express.Application, options: RouteOptions) {
@@ -23,8 +26,21 @@ export class RouteHandler {
             return
         }
 
-        server[options.verb](options.path, (req, res, next) => {
+        server[options.verb](options.path, (req: RequestContext, res, next) => {
             const requestContext: RequestContext = req
+            const startTime = new Date()
+
+            req.starttime = startTime
+            this.kyberServer.events.emit(KyberServerEvents.BeginRequest, {
+                body: req.body,
+                method: req.method,
+                params: req.params,
+                path: req.path,
+                query: req.query,
+                correlationId: req.id,
+                starttime: startTime,
+                ip: req.ip
+            })
             return this.execute(server, options, requestContext, res, next)
         })
 
@@ -60,7 +76,7 @@ export class RouteHandler {
                 return res.status(408).json(response)
             }, schematicInstance.timeout || 5000)
 
-            execContext = new ExecutionContext(req, schematicInstance, options.sharedResources||[])
+            execContext = new ExecutionContext(req, schematicInstance, options.sharedResources||[], this.kyberServer)
 
             if (req.timedout) return
             await this.beforeEachExecution(server, options, req, res)
@@ -82,6 +98,22 @@ export class RouteHandler {
             if (!Utilities.isString(err)) {
                 // The Error Response has already been composed by Execution Context
                 const httpStatus = execContext.httpStatus === 200 ? 500 : execContext.httpStatus
+                const endTime = new Date()
+                const runtime = Math.abs(+endTime - +req.starttime)/1000
+                this.kyberServer.events.emit(KyberServerEvents.RouteHandlerException, {
+                    body: req.body,
+                    method: req.method,
+                    params: req.params,
+                    path: req.path,
+                    query: req.query,
+                    err: Object.assign({}, err),
+                    httpStatus: httpStatus,
+                    correlationId: execContext ? execContext.correlationId : req.id,
+                    starttime: req.starttime,
+                    endtime: endTime,
+                    runtime: runtime,
+                    ip: req.ip
+                })
                 return res.status(httpStatus).json(err)
             }
             let message = err
@@ -97,6 +129,7 @@ export class RouteHandler {
     private beforeEachExecution(server: Express.Application, options: RouteOptions, 
         req: RequestContext, res: Express.Response): Promise<any> {
 
+        // TODO: Implement Global Schematic Before Each Execution
         res.header('X-Powered-By', 'kyber')
         return Promise.resolve(true)
 
@@ -106,6 +139,22 @@ export class RouteHandler {
         req: RequestContext, res: Express.Response,
         next: Express.NextFunction): Promise<any> {
 
+        const endTime = new Date()
+        const runtime = Math.abs(+endTime - +req.starttime)/1000
+        this.kyberServer.events.emit(KyberServerEvents.EndRequest, {
+            body: req.body,
+            method: req.method,
+            params: req.params,
+            path: req.path,
+            query: req.query,
+            correlationId: req.id,
+            starttime: req.starttime,
+            endtime: endTime,
+            runtime: runtime,
+            ip: req.ip
+        })
+
+        // TODO: Implement Global Schematic After Each Execution
         if (!res.headersSent) {
             next()
             return Promise.resolve(true)
@@ -118,11 +167,7 @@ export class RouteHandler {
 
         const result = new Promise(async(resolve, reject) => {
             try {
-                const kyberServerTest = _.find(options.sharedResources, { name: 'kyberServer' })
-                if (!kyberServerTest) {
-                    return next(message)
-                }
-                const response = await kyberServerTest.instanceOfType.throwGlobalSchematicError(req, httpStatus, message)
+                const response = await this.kyberServer.throwGlobalSchematicError(req, httpStatus, message)
                 return resolve(response)
             }
             catch (err) {
