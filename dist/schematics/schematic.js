@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var Schematic = (function () {
     function Schematic() {
         this.parameters = [];

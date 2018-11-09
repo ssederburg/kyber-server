@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var ProcessorResponse = (function () {
     function ProcessorResponse() {
         this.successful = true;

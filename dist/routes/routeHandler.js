@@ -4,18 +4,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
+        step((generator = generator.apply(thisArg, _arguments)).next());
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t;
+    return { next: verb(0), "throw": verb(1), "return": verb(2) };
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
         while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
             switch (op[0]) {
                 case 0: case 1: t = op; break;
                 case 4: _.label++; return { value: op[1], done: false };
@@ -34,7 +34,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 var executionContext_1 = require("../executionContext");
 var utilities_1 = require("../utilities/utilities");
 var events_1 = require("../events");
@@ -60,13 +59,14 @@ var RouteHandler = (function () {
     };
     RouteHandler.prototype.execute = function (server, options, req, res, next) {
         return __awaiter(this, void 0, void 0, function () {
-            var testResult, response, execContext, schematicInstance, timer, result, err_1, httpStatus_1, endTime, runtime, message, httpStatus, response;
             var _this = this;
+            var testResult, response, execContext, schematicInstance, timer, result, err_1, httpStatus_1, endTime, runtime, message, httpStatus, response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!(options.useResolver && options.resolve)) return [3, 2];
-                        return [4, options.resolve(req)];
+                        if (!(options.useResolver && options.resolve))
+                            return [3 /*break*/, 2];
+                        return [4 /*yield*/, options.resolve(req)];
                     case 1:
                         testResult = _a.sent();
                         if (testResult) {
@@ -74,12 +74,13 @@ var RouteHandler = (function () {
                         }
                         _a.label = 2;
                     case 2:
-                        if (!!options.schematic) return [3, 4];
+                        if (!!options.schematic)
+                            return [3 /*break*/, 4];
                         console.log("Attempted to execute route " + req.path + " without a valid schematic. Route ignored.");
-                        return [4, this.throwError(req, 400, "Invalid Request. Missing Schematic.", options, next)];
+                        return [4 /*yield*/, this.throwError(req, 400, "Invalid Request. Missing Schematic.", options, next)];
                     case 3:
                         response = _a.sent();
-                        return [2, res.status(400).json(response)];
+                        return [2 /*return*/, res.status(400).json(response)];
                     case 4:
                         _a.trys.push([4, 7, , 9]);
                         schematicInstance = new options.schematic();
@@ -89,37 +90,37 @@ var RouteHandler = (function () {
                                 switch (_a.label) {
                                     case 0:
                                         if (res.headersSent)
-                                            return [2];
+                                            return [2 /*return*/];
                                         console.log("Timeout exceeded on path " + req.path);
                                         req.timedout = true;
-                                        return [4, this.throwError(req, 400, "Request Timed Out.", options, next)];
+                                        return [4 /*yield*/, this.throwError(req, 400, "Request Timed Out.", options, next)];
                                     case 1:
                                         response = _a.sent();
-                                        return [2, res.status(408).json(response)];
+                                        return [2 /*return*/, res.status(408).json(response)];
                                 }
                             });
                         }); }, schematicInstance.timeout || 5000);
                         execContext = new executionContext_1.ExecutionContext(req, schematicInstance, options.sharedResources || [], this.kyberServer);
                         if (req.timedout)
-                            return [2];
-                        return [4, this.beforeEachExecution(server, options, req, res)];
+                            return [2 /*return*/];
+                        return [4 /*yield*/, this.beforeEachExecution(server, options, req, res)];
                     case 5:
                         _a.sent();
                         if (req.timedout)
-                            return [2];
-                        return [4, execContext.execute()];
+                            return [2 /*return*/];
+                        return [4 /*yield*/, execContext.execute()];
                     case 6:
                         result = _a.sent();
                         res.status(execContext.httpStatus).json(result);
                         clearTimeout(timer);
                         if (req.timedout)
-                            return [2];
+                            return [2 /*return*/];
                         this.afterEachExecution(server, options, req, res, next);
-                        return [3, 9];
+                        return [3 /*break*/, 9];
                     case 7:
                         err_1 = _a.sent();
                         if (res.headersSent)
-                            return [2];
+                            return [2 /*return*/];
                         if (!utilities_1.Utilities.isString(err_1)) {
                             httpStatus_1 = execContext.httpStatus === 200 ? 500 : execContext.httpStatus;
                             endTime = new Date();
@@ -139,17 +140,17 @@ var RouteHandler = (function () {
                                 runtime: runtime,
                                 ip: req.ip
                             });
-                            return [2, res.status(httpStatus_1).json(err_1)];
+                            return [2 /*return*/, res.status(httpStatus_1).json(err_1)];
                         }
                         message = err_1;
                         httpStatus = message.indexOf('timeout') >= 0 ? 408 : execContext.httpStatus;
                         if (httpStatus === 200)
                             httpStatus = 500;
-                        return [4, this.throwError(req, httpStatus, message, options, next)];
+                        return [4 /*yield*/, this.throwError(req, httpStatus, message, options, next)];
                     case 8:
                         response = _a.sent();
-                        return [2, res.status(httpStatus).json(response)];
-                    case 9: return [2];
+                        return [2 /*return*/, res.status(httpStatus).json(response)];
+                    case 9: return [2 /*return*/];
                 }
             });
         });
@@ -201,14 +202,14 @@ var RouteHandler = (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4, this.kyberServer.throwGlobalSchematicError(req, httpStatus, message)];
+                        return [4 /*yield*/, this.kyberServer.throwGlobalSchematicError(req, httpStatus, message)];
                     case 1:
                         response = _a.sent();
-                        return [2, resolve(response)];
+                        return [2 /*return*/, resolve(response)];
                     case 2:
                         err_2 = _a.sent();
-                        return [2, next(err_2)];
-                    case 3: return [2];
+                        return [2 /*return*/, next(err_2)];
+                    case 3: return [2 /*return*/];
                 }
             });
         }); });

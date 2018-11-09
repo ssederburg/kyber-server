@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var Parameter = (function () {
     function Parameter() {
         this.required = false;

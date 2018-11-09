@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var RouteOptions = (function () {
     function RouteOptions() {
         this.verb = 'GET';

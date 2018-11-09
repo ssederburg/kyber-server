@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var _ = require("lodash");
 var config = require("config");
 var util = require("util");
