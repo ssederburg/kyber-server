@@ -28,20 +28,9 @@ export class RouteHandler {
 
         server[options.verb](options.path, (req: RequestContext, res, next) => {
             const requestContext: RequestContext = req
-            const startTime = new Date()
 
-            req.starttime = startTime
-            this.kyberServer.events.emit(KyberServerEvents.BeginRequest, {
-                body: req.body,
-                method: req.method,
-                params: req.params,
-                path: req.path,
-                query: req.query,
-                correlationId: req.id,
-                starttime: startTime,
-                ip: req.ip
-            })
             return this.execute(server, options, requestContext, res, next)
+
         })
 
     }
@@ -101,6 +90,8 @@ export class RouteHandler {
                 const endTime = new Date()
                 const runtime = Math.abs(+endTime - +req.starttime)/1000
                 this.kyberServer.events.emit(KyberServerEvents.RouteHandlerException, {
+                    source: `RouteHandler.execute.catch`,
+                    correlationId: req.id,
                     body: req.body,
                     method: req.method,
                     params: req.params,
@@ -108,7 +99,6 @@ export class RouteHandler {
                     query: req.query,
                     err: Object.assign({}, err),
                     httpStatus: httpStatus,
-                    correlationId: execContext ? execContext.correlationId : req.id,
                     starttime: req.starttime,
                     endtime: endTime,
                     runtime: runtime,
@@ -131,6 +121,21 @@ export class RouteHandler {
 
         // TODO: Implement Global Schematic Before Each Execution
         res.header('X-Powered-By', 'kyber')
+
+        const startTime = new Date()
+
+        req.starttime = startTime
+        this.kyberServer.events.emit(KyberServerEvents.BeginRequest, {
+            source: `RouteHandler.beforeEachExecution`,
+            correlationId: req.id,
+            body: req.body,
+            method: req.method,
+            params: req.params,
+            path: req.path,
+            query: req.query,
+            starttime: startTime,
+            ip: req.ip
+        })
         return Promise.resolve(true)
 
     }
@@ -142,12 +147,13 @@ export class RouteHandler {
         const endTime = new Date()
         const runtime = Math.abs(+endTime - +req.starttime)/1000
         this.kyberServer.events.emit(KyberServerEvents.EndRequest, {
+            source: `RouteHandler.afterEachExecution`,
+            correlationId: req.id,
             body: req.body,
             method: req.method,
             params: req.params,
             path: req.path,
             query: req.query,
-            correlationId: req.id,
             starttime: req.starttime,
             endtime: endTime,
             runtime: runtime,

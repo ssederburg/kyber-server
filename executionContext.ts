@@ -81,9 +81,10 @@ export class ExecutionContext {
                 let counter = 0
                 _.forEach(_.sortBy(activities, 'ordinal'), async(activityDef: Activity) => {
                     this.kyberServer.events.emit(KyberServerEvents.ActivityStarted, {
+                        source: `ExecutionContext.runActivities`,
+                        correlationId: this.correlationId,
                         schematic: this.schematic.id,
-                        activity: activityDef.id,
-                        correlationId: this.correlationId
+                        activity: activityDef.id
                     })
                     processTasks.push(this.runProcesses(activityDef.id, activityDef.processes, activityDef.executionMode))
                     // TODO: Track ProcessorResponse for httpStatus !== 200
@@ -92,9 +93,10 @@ export class ExecutionContext {
                         counter = counter + 1
                         if (counter >= activities.length) {
                             this.kyberServer.events.emit(KyberServerEvents.ActivityEnded, {
+                                source: `ExecutionContext.runActivities`,
+                                correlationId: this.correlationId,
                                 schematic: this.schematic.id,
-                                activity: activityDef.id,
-                                correlationId: this.correlationId
+                                activity: activityDef.id
                             })
                             return resolve(true)
                         }
@@ -125,10 +127,11 @@ export class ExecutionContext {
                 const tasks = []
                 _.forEach(_.sortBy(processes, 'ordinal'), (process: ProcessorDef) => {
                     this.kyberServer.events.emit(KyberServerEvents.ProcessorStarted, {
+                        source: `ExecutionContext.runProcesses`,
+                        correlationId: this.correlationId,
                         schematic: this.schematic.id,
                         activity: activityId,
-                        processor: process.class.name.toString(),
-                        correlationId: this.correlationId
+                        processor: process.class.name.toString()
                     })
                     // TODO: Load using Factory with name string
                     // TODO: Sequential vs. Concurrent
@@ -136,10 +139,11 @@ export class ExecutionContext {
                         const test = new process.class(this, process)
                         tasks.push(this.tryCatchWrapperForProcess(test, process).then((response) => {
                             this.kyberServer.events.emit(KyberServerEvents.ProcessorEnded, {
+                                source: `ExecutionContext.runProcesses`,
+                                correlationId: this.correlationId,
                                 schematic: this.schematic.id,
                                 activity: activityId,
                                 processor: process.class.name.toString(),
-                                correlationId: this.correlationId,
                                 response: Object.assign({}, response)
                             })
                         }))
@@ -219,9 +223,10 @@ export class ExecutionContext {
                 let wasOneInvalid = false
                 if (this.schematic && this.schematic.parameters && this.schematic.parameters.length > 0) {
                     this.kyberServer.events.emit(KyberServerEvents.ExecutionContextBeforeLoadParameters, {
+                        source: `ExecutionContext.loadParameters`,
+                        correlationId: this.correlationId,
                         schematic: this.schematic.id,
-                        parameters: Object.assign({}, this.schematic.parameters),
-                        correlationId: this.correlationId
+                        parameters: Object.assign({}, this.schematic.parameters)
                     })
                     _.forEach(this.schematic.parameters, (parameter: Parameter) => {
                         const value = Utilities.evalExpression(parameter.source, this.req)
@@ -275,9 +280,10 @@ export class ExecutionContext {
                         }
                     })
                     this.kyberServer.events.emit(KyberServerEvents.ExecutionContextAfterLoadParameters, {
+                        source: `ExecutionContext.loadParameters`,
+                        correlationId: this.correlationId,
                         schematic: this.schematic.id,
-                        parameters: Object.assign({}, this.parameters),
-                        correlationId: this.correlationId
+                        parameters: Object.assign({}, this.parameters)
                     })
                     if (wasOneInvalid) {
                         this.httpStatus = 400

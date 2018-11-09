@@ -66,7 +66,10 @@ export class KyberServer {
         if (this.isStarted) return
         this.isStarted = true
 
-        this.events.emit(KyberServerEvents.ServerStarting)
+        this.events.emit(KyberServerEvents.ServerStarting, {
+            source: `KyberServer`,
+            correlationId: `SYSTEM`
+        })
         
         this.server.use(async(err, req, res, next) => {
             if (err) {
@@ -103,6 +106,8 @@ export class KyberServer {
             })
 
             this.events.emit(KyberServerEvents.ServerStarted, {
+                source: `KyberServer`,
+                correlationId: `SYSTEM`,
                 status: 0,
                 message: 'Hello There'
             })
@@ -116,10 +121,16 @@ export class KyberServer {
         if (this.shuttingDown) return
         this.shuttingDown = true
 
-        this.events.emit(KyberServerEvents.ServerStopping)
+        this.events.emit(KyberServerEvents.ServerStopping, {
+            source: `KyberServer`,
+            correlationId: `SYSTEM`
+        })
         
         // TODO: Call Shutdown on all routes
-        this.events.emit(KyberServerEvents.ServerStopped)
+        this.events.emit(KyberServerEvents.ServerStopped, {
+            source: `KyberServer`,
+            correlationId: `SYSTEM`
+        })
         process.exit(0)
 
     }
@@ -151,6 +162,8 @@ export class KyberServer {
                 executionContext.errors.push(errText)
                 const response = await executionContext.execute()
                 this.events.emit(KyberServerEvents.GlobalSchematicError, {
+                    source: `KyberServer.throwGlobalSchematicError`,
+                    correlationId: req.id,
                     path: req.path,
                     method: req.method,
                     body: req.body,
