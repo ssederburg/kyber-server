@@ -1,7 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "outDir": "dist",
+    "outDir": "./dist",
     "sourceMap": false,
     "declaration": true,
     "moduleResolution": "node",
@@ -17,8 +17,10 @@
     ]
   },
   "exclude": [
+    "dist",
     "_build",
     "_bundle",
-    "localbuilder.ts"
-	]
+    "localbuilder.ts",
+    "node_modules"
+  ]
 }

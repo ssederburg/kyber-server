@@ -1,6 +1,6 @@
 import { Schematic } from './schematics';
 import { RequestContext, SharedResource } from './schemas';
-import { KyberServer } from './';
+import { KyberServer } from './kyberServer';
 export declare class ExecutionContext {
     req: RequestContext;
     schematic: Schematic;

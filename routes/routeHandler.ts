@@ -1,5 +1,7 @@
 import * as Express from 'express'
-import { Schematic, RequestContext, KyberServer } from "..";
+import { RequestContext } from "../schemas"
+import { Schematic } from '../schematics'
+import { KyberServer } from '../kyberServer'
 import { RouteOptions } from './'
 import * as config from 'config'
 import { ExecutionContext } from '../executionContext'
@@ -10,7 +12,7 @@ import * as _ from 'lodash'
 
 export class RouteHandler {
 
-    constructor(private kyberServer: KyberServer) {}
+    constructor(private kyberServer: any) {} // KyberServer
 
     //#region Server Method Implementation
     public register(server: Express.Application, options: RouteOptions) {
@@ -42,7 +44,7 @@ export class RouteHandler {
 
         // Check if resolver. If so, run it before continuing
         if (options.useResolver && options.resolve) {
-            const testResult:Promise<typeof Schematic>|typeof Schematic|null = await options.resolve(req)
+            const testResult: Promise<typeof Schematic>|typeof Schematic|null = await options.resolve(req) // Promise<typeof Schematic>|typeof Schematic|null
             if (testResult) {
                 options.schematic = testResult
             }

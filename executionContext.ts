@@ -3,7 +3,7 @@ import { RequestContext, Parameter, Activity, SharedResource,
     ExecutionMode, ProcessorDef, BaseProcessor, ProcessorResponse, SchematicResponse } from './schemas'
 import { Utilities } from './utilities/utilities'
 import { KyberServerEvents } from './events'
-import { KyberServer } from './'
+import { KyberServer } from './kyberServer'
 
 import * as _ from 'lodash'
 import { RawResponse, ErrorResponse } from './responses';
@@ -26,7 +26,7 @@ export class ExecutionContext {
     private parameters: Array<Parameter> = []
     private wasOneCriticalFailure: boolean = false
 
-    constructor(public req: RequestContext, public schematic: Schematic, private sharedResources: Array<SharedResource>, private kyberServer: KyberServer) {
+    constructor(public req: RequestContext, public schematic: Schematic, private sharedResources: Array<SharedResource>, private kyberServer: KyberServer) { // KyberServer
         this.correlationId = req.id
     }
 
