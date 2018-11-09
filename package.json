@@ -1,10 +1,11 @@
 {
   "name": "kyber-server",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "authorize validate compose transform map act respond framework",
-  "main": "index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "start": "nodemon -r ts-node/register index.ts",
+    "start": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
