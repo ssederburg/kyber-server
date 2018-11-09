@@ -1,0 +1,30 @@
+import { Schematic } from './schematics';
+import { RequestContext, SharedResource } from './schemas';
+import { KyberServer } from './';
+export declare class ExecutionContext {
+    req: RequestContext;
+    schematic: Schematic;
+    private sharedResources;
+    private kyberServer;
+    httpStatus: number;
+    correlationId: string;
+    errors: any[];
+    warnings: any[];
+    log: any[];
+    raw: {};
+    transformed: {};
+    mapped: {};
+    results: any[];
+    private parameters;
+    private wasOneCriticalFailure;
+    constructor(req: RequestContext, schematic: Schematic, sharedResources: Array<SharedResource>, kyberServer: KyberServer);
+    execute(): Promise<any>;
+    getParameterValue(name: string): any;
+    getSharedResource(name: string): any;
+    private runActivities;
+    private runProcesses;
+    private respond;
+    private tryCatchWrapperForProcess;
+    private loadParameters;
+    private errorResponse;
+}

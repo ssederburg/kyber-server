@@ -1,0 +1,30 @@
+import { RouteOptions } from './routes';
+import { GlobalSchematic } from './schematics';
+import { KyberServerOptions } from './';
+import { RequestContext, SchematicResponse } from './schemas';
+export declare class KyberServer {
+    private options;
+    private server;
+    private isStarted;
+    private shuttingDown;
+    private globalSchematic;
+    private sharedResources;
+    events: any;
+    constructor(options: KyberServerOptions);
+    registerGlobalSchematic(schematic: typeof GlobalSchematic, sharedResources?: Array<any>): void;
+    registerHandler(verb: string, path: string, handler: any): void;
+    registerRoute(options: RouteOptions): void;
+    start(): void;
+    shutdown(): void;
+    getGlobalSchematicResponse(httpStatus: number): SchematicResponse;
+    throwGlobalSchematicError(req: RequestContext, httpStatus: number, errText: string): Promise<any>;
+}
+export { KyberServerEvents } from './events';
+export { Schematic, GlobalSchematic } from './schematics';
+export { KyberServerOptions } from './kyberServerOptions';
+export { RouteOptions } from './routes';
+export { RequestContext, IUserContext, Parameter, ProcessorDef, Activity, SharedResource, ExecutionMode, BaseProcessor, ProcessorResponse, SchematicResponse } from './schemas';
+export { ExecutionContext } from './executionContext';
+export { Utilities } from './utilities/utilities';
+export * from './validators';
+export { RawResponse, ErrorResponse } from './responses';
