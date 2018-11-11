@@ -4,18 +4,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments)).next());
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t;
-    return { next: verb(0), "throw": verb(1), "return": verb(2) };
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
         while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
                 case 0: case 1: t = op; break;
                 case 4: _.label++; return { value: op[1], done: false };
@@ -34,6 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var express = require('express');
 var bodyParser = require('body-parser');
 var EventEmitter = require('events');
@@ -94,20 +95,19 @@ var KyberServer = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!err)
-                            return [3 /*break*/, 2];
+                        if (!err) return [3, 2];
                         console.log('500: ' + err);
                         if (res.headersSent) {
-                            return [2 /*return*/];
+                            return [2];
                         }
                         res.header('X-Powered-By', 'kyber');
-                        return [4 /*yield*/, this.throwGlobalSchematicError(req, 500, "Unhandled Exception in service: " + req.path + ": " + err)];
+                        return [4, this.throwGlobalSchematicError(req, 500, "Unhandled Exception in service: " + req.path + ": " + err)];
                     case 1:
                         response = _a.sent();
-                        return [2 /*return*/, res.status(500).json(response)];
+                        return [2, res.status(500).json(response)];
                     case 2:
                         next(err);
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         }); });
@@ -117,10 +117,10 @@ var KyberServer = (function () {
                 switch (_a.label) {
                     case 0:
                         res.header('X-Powered-By', 'kyber');
-                        return [4 /*yield*/, this.throwGlobalSchematicError(req, 404, "Unable to locate path " + req.path)];
+                        return [4, this.throwGlobalSchematicError(req, 404, "Unable to locate path " + req.path)];
                     case 1:
                         response = _a.sent();
-                        return [2 /*return*/, res.status(404).json(response)];
+                        return [2, res.status(404).json(response)];
                 }
             });
         }); });
@@ -185,7 +185,7 @@ var KyberServer = (function () {
                         executionContext.httpStatus = httpStatus;
                         executionContext.raw = errText;
                         executionContext.errors.push(errText);
-                        return [4 /*yield*/, executionContext.execute()];
+                        return [4, executionContext.execute()];
                     case 1:
                         response = _a.sent();
                         this.events.emit(events_1.KyberServerEvents.GlobalSchematicError, {
@@ -199,11 +199,11 @@ var KyberServer = (function () {
                             httpStatus: httpStatus,
                             message: errText
                         });
-                        return [2 /*return*/, resolve(response)];
+                        return [2, resolve(response)];
                     case 2:
                         err_1 = _a.sent();
-                        return [2 /*return*/, resolve()];
-                    case 3: return [2 /*return*/];
+                        return [2, resolve()];
+                    case 3: return [2];
                 }
             });
         }); });

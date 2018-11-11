@@ -63,7 +63,8 @@ export class RouteHandler {
                 if (res.headersSent) return
                 console.log(`Timeout exceeded on path ${req.path}`)
                 req.timedout = true
-                const response = await this.throwError(req, 400, `Request Timed Out.`, options, next)
+                execContext.httpStatus = 408
+                const response = await this.throwError(req, 408, `Request Timed Out.`, options, next)
                 return res.status(408).json(response)
             }, schematicInstance.timeout || 5000)
 

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var BaseProcessor = (function () {
     function BaseProcessor(executionContext, processorDef) {
         this.executionContext = executionContext;
