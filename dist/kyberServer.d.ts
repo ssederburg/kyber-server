@@ -1,6 +1,6 @@
 import { RouteOptions } from './routes';
 import { GlobalSchematic } from './schematics';
-import { KyberServerOptions } from './';
+import { KyberServerOptions } from './kyberServerOptions';
 import { RequestContext, SchematicResponse } from './schemas';
 export declare class KyberServer {
     private options;

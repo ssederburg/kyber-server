@@ -1,13 +1,14 @@
 import * as Express from 'express'
 
 const express = require('express')
+const helmet = require('helmet')
 const bodyParser = require('body-parser')
 const EventEmitter = require('events')
 
 import {KyberServerEvents} from './events'
 import {RouteHandler, RouteOptions} from './routes'
-import {Schematic, GlobalSchematic} from './schematics'
-import {KyberServerOptions} from './'
+import {GlobalSchematic} from './schematics'
+import {KyberServerOptions} from './kyberServerOptions'
 import * as _ from 'lodash'
 const env = require("dotenv").config()
 import * as config from 'config'
@@ -17,7 +18,7 @@ const uuidv4 = require('uuid/v4')
 
 export class KyberServer {
 
-    private server = express()
+    private server = null
     private isStarted: boolean = false
     private shuttingDown: boolean = false
     private globalSchematic: typeof GlobalSchematic = null
@@ -26,6 +27,9 @@ export class KyberServer {
     public events = new EventEmitter()
 
     constructor (private options: KyberServerOptions) {
+        this.server = express()
+        this.server.use(helmet())
+        
         this.server.use(bodyParser.json())
         this.server.use((req, res, next) => {
             req.id = uuidv4()
@@ -70,14 +74,26 @@ export class KyberServer {
             source: `KyberServer`,
             correlationId: `SYSTEM`
         })
+
+        // Setup Static Assets as last Route Handler before 404 or 500
+        if (this.options.staticPath) {
+            if (this.options.baseHref) {
+                // Create a virtual path prefix
+                // files accessed with path /staticBaseHref/staticPath
+                // example of staticBaseHref should start with / e.g. /static
+                this.server.use(this.options.baseHref, express.static(this.options.staticPath))
+            } else {
+                // Use a relative path without virtual path prefix
+                // files access with path /staticPath
+                this.server.use(express.static(this.options.staticPath))
+            }
+        }
         
         this.server.use(async(err, req, res, next) => {
             if (err) {
-                console.log('500: ' + err)
                 if (res.headersSent) {
                     return
                 }
-                res.header('X-Powered-By', 'kyber')
                 const response = await this.throwGlobalSchematicError(req, 500, `Unhandled Exception in service: ${req.path}: ${err}`)
                 return res.status(500).json(response)
             }
@@ -85,7 +101,10 @@ export class KyberServer {
         })
 
         this.server.use(async(req, res, next) => {
-            res.header('X-Powered-By', 'kyber')
+            // If not XHR, Assume HTML5 Mode URL and return root SPA page
+            if (this.options.staticPath && !req.XHR) {
+                
+            }
             const response = await this.throwGlobalSchematicError(req, 404, `Unable to locate path ${req.path}`)
             return res.status(404).json(response)
         })
@@ -109,7 +128,7 @@ export class KyberServer {
                 source: `KyberServer`,
                 correlationId: `SYSTEM`,
                 status: 0,
-                message: 'Hello There'
+                message: 'Locked In'
             })
             console.log(`\nServer listening on http://localhost:${this.options.port}\n`)
         })

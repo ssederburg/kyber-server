@@ -123,7 +123,6 @@ export class RouteHandler {
         req: RequestContext, res: Express.Response): Promise<any> {
 
         // TODO: Implement Global Schematic Before Each Execution
-        res.header('X-Powered-By', 'kyber')
 
         const startTime = new Date()
 

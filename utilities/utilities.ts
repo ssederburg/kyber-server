@@ -106,6 +106,30 @@ export class Utilities {
         return typeof value === 'string'
     }
 
+    public readValue(documentPath: string, source: any): string|any {
 
+        if (documentPath.indexOf('/') < 0) return source[documentPath]
+        const paths = documentPath.split('/')
+        let reader: any = source
+        paths.forEach((element) => {
+            if (reader !== null) reader = reader[element]
+        })
+        return reader
+
+    }
+
+    public writeValue(documentPath: string, value: any, source: any) {
+
+        if (documentPath.indexOf('.') < 0) return source[documentPath] = value
+        const paths = documentPath.split('/')
+        let reader: any = source
+        paths.forEach((element, index) => {
+            if (index >= paths.length - 1) {
+                return reader[element] = value
+            }
+            reader = reader[element]
+        })
+
+    }    
 
 }

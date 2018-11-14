@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express = require('express');
+var helmet = require('helmet');
 var bodyParser = require('body-parser');
 var EventEmitter = require('events');
 var events_1 = require("./events");
@@ -47,12 +48,14 @@ var uuidv4 = require('uuid/v4');
 var KyberServer = (function () {
     function KyberServer(options) {
         this.options = options;
-        this.server = express();
+        this.server = null;
         this.isStarted = false;
         this.shuttingDown = false;
         this.globalSchematic = null;
         this.sharedResources = [];
         this.events = new EventEmitter();
+        this.server = express();
+        this.server.use(helmet());
         this.server.use(bodyParser.json());
         this.server.use(function (req, res, next) {
             req.id = uuidv4();
@@ -90,6 +93,14 @@ var KyberServer = (function () {
             source: "KyberServer",
             correlationId: "SYSTEM"
         });
+        if (this.options.staticPath) {
+            if (this.options.baseHref) {
+                this.server.use(this.options.baseHref, express.static(this.options.staticPath));
+            }
+            else {
+                this.server.use(express.static(this.options.staticPath));
+            }
+        }
         this.server.use(function (err, req, res, next) { return __awaiter(_this, void 0, void 0, function () {
             var response;
             return __generator(this, function (_a) {
@@ -100,7 +111,6 @@ var KyberServer = (function () {
                         if (res.headersSent) {
                             return [2];
                         }
-                        res.header('X-Powered-By', 'kyber');
                         return [4, this.throwGlobalSchematicError(req, 500, "Unhandled Exception in service: " + req.path + ": " + err)];
                     case 1:
                         response = _a.sent();
@@ -116,7 +126,8 @@ var KyberServer = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        res.header('X-Powered-By', 'kyber');
+                        if (this.options.staticPath && !req.XHR) {
+                        }
                         return [4, this.throwGlobalSchematicError(req, 404, "Unable to locate path " + req.path)];
                     case 1:
                         response = _a.sent();
@@ -140,7 +151,7 @@ var KyberServer = (function () {
                 source: "KyberServer",
                 correlationId: "SYSTEM",
                 status: 0,
-                message: 'Hello There'
+                message: 'Locked In'
             });
             console.log("\nServer listening on http://localhost:" + _this.options.port + "\n");
         });

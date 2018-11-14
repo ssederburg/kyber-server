@@ -156,7 +156,6 @@ var RouteHandler = (function () {
         });
     };
     RouteHandler.prototype.beforeEachExecution = function (server, options, req, res) {
-        res.header('X-Powered-By', 'kyber');
         var startTime = new Date();
         req.starttime = startTime;
         this.kyberServer.events.emit(events_1.KyberServerEvents.BeginRequest, {

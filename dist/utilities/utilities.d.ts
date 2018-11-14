@@ -11,4 +11,6 @@ export declare class Utilities {
     static isNumber(value: any): boolean;
     static isObject(value: any): boolean;
     static isString(value: any): boolean;
+    readValue(documentPath: string, source: any): string | any;
+    writeValue(documentPath: string, value: any, source: any): any;
 }

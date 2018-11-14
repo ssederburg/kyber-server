@@ -93,6 +93,29 @@ var Utilities = (function () {
     Utilities.isString = function (value) {
         return typeof value === 'string';
     };
+    Utilities.prototype.readValue = function (documentPath, source) {
+        if (documentPath.indexOf('/') < 0)
+            return source[documentPath];
+        var paths = documentPath.split('/');
+        var reader = source;
+        paths.forEach(function (element) {
+            if (reader !== null)
+                reader = reader[element];
+        });
+        return reader;
+    };
+    Utilities.prototype.writeValue = function (documentPath, value, source) {
+        if (documentPath.indexOf('.') < 0)
+            return source[documentPath] = value;
+        var paths = documentPath.split('/');
+        var reader = source;
+        paths.forEach(function (element, index) {
+            if (index >= paths.length - 1) {
+                return reader[element] = value;
+            }
+            reader = reader[element];
+        });
+    };
     return Utilities;
 }());
 exports.Utilities = Utilities;
