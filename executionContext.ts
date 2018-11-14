@@ -44,13 +44,17 @@ export class ExecutionContext {
             catch (err) {
                 if (!this.wasOneCriticalFailure) {
                     this.wasOneCriticalFailure = true
-                    const response = await this.respond()
-                    console.log(`executionContext.execute.error: Throwing ${JSON.stringify(response, null, 1)}`)
-                    return reject(response)
+                    if (this.httpStatus === 200) {
+                        console.warn(`Error was thrown within ExecutionContext WITHOUT setting httpStatus to non-200. Check code path and set http status to correct fail code...`)
+                        this.httpStatus = 500
+                    }
+                    const firstErrorResponse = await this.respond()
+                    console.log(`executionContext.execute.error: Throwing ${JSON.stringify(firstErrorResponse, null, 1)}`)
+                    return reject(firstErrorResponse)
                 }
-                const response = await this.errorResponse()
-                console.log(`executionContext.execute.error.secondchance: Throwing ${JSON.stringify(response, null, 1)}`)
-                return reject(response)
+                const secondErrorResponse = await this.errorResponse()
+                console.log(`executionContext.execute.error.secondchance: Throwing ${JSON.stringify(secondErrorResponse, null, 1)}`)
+                return reject(secondErrorResponse)
             }
         })
 
@@ -174,6 +178,7 @@ export class ExecutionContext {
                 let theType: typeof BaseProcessor = null
                 let test: SchematicResponse = _.find(this.schematic.responses, { httpStatus: this.httpStatus })
                 if (!test) {
+                    console.log(`kyber-server.executionContext.getGlobalSchematicResponse: httpStatus ${this.httpStatus}`)
                     test = this.kyberServer.getGlobalSchematicResponse(this.httpStatus)
                     if (!test) {
                         console.log(`kyber-server.executionContext.respond.error: no record of response for http status ${this.httpStatus}`)
@@ -182,7 +187,7 @@ export class ExecutionContext {
                         theType = test.class
                     }
                 } else {
-                    // TODO: Implement resolve
+                    // TODO: Implement resolver
                     theType = test.class
                 }
                 // TODO: Load from String using Factory
@@ -191,6 +196,9 @@ export class ExecutionContext {
                 return resolve(response.data || response)
             }
             catch (err) {
+                if (this.httpStatus === 200) {
+                    this.httpStatus = 500
+                }
                 this.errors.push(`kyber-server.executionContext.respond().error`)
                 return reject(err)
             }
@@ -208,6 +216,9 @@ export class ExecutionContext {
                 return resolve(response)
             }
             catch (err) {
+                if (this.httpStatus === 200) {
+                    this.httpStatus = 500
+                }
                 return reject(err)
             }
         })
@@ -295,6 +306,9 @@ export class ExecutionContext {
             catch (err) {
                 console.error(`ExecutionContext.loadParameters: ${err}`)
                 this.errors.push(`ExecutionContext.loadParameters: ${err}`)
+                if (this.httpStatus === 200) {
+                    this.httpStatus = 500
+                }
                 reject(err)
             }
         })
@@ -307,6 +321,9 @@ export class ExecutionContext {
 
         const result = new Promise(async(resolve, reject) => {
             try {
+                if (this.httpStatus === 200) {
+                    this.httpStatus = 500
+                }
                 const test = {
                     class: ErrorResponse
                 }

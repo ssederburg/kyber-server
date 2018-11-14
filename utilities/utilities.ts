@@ -60,6 +60,10 @@ export class Utilities {
                 return Utilities.isBoolean(value)
             case 'number':
                 return Utilities.isNumber(value)
+            case 'array':
+                return Utilities.isArray(value)
+            case 'object':
+                return Utilities.isObject(value)
             default:
                 console.log(`Utilities.isDataType: No record of data type ${dataType}. Test ignored.`)
                 return true
@@ -71,7 +75,7 @@ export class Utilities {
     }
 
     public static isArray(value: any): boolean {
-        return value.isArray()
+        return Array.isArray(value)
     }
 
     public static isDate(value: any): boolean {

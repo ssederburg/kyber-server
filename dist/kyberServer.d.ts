@@ -15,7 +15,7 @@ export declare class KyberServer {
     registerHandler(verb: string, path: string, handler: any): void;
     registerRoute(options: RouteOptions): void;
     start(): void;
-    shutdown(): void;
+    shutdown(withError?: boolean): void;
     getGlobalSchematicResponse(httpStatus: number): SchematicResponse;
     throwGlobalSchematicError(req: RequestContext, httpStatus: number, errText: string): Promise<any>;
 }

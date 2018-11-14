@@ -124,6 +124,12 @@ export class KyberServer {
                 this.shutdown()
             })
 
+            process.on('uncaughtException', (err) => {
+                console.error(`UncaughtException in KyberServer`)
+                console.error(JSON.stringify(err, null, 1))
+                this.shutdown(true) // With Failure option means process.exit(1)
+            })
+
             this.events.emit(KyberServerEvents.ServerStarted, {
                 source: `KyberServer`,
                 correlationId: `SYSTEM`,
@@ -135,7 +141,7 @@ export class KyberServer {
 
     }
 
-    public shutdown() {
+    public shutdown(withError: boolean = false) {
 
         if (this.shuttingDown) return
         this.shuttingDown = true
@@ -150,7 +156,7 @@ export class KyberServer {
             source: `KyberServer`,
             correlationId: `SYSTEM`
         })
-        process.exit(0)
+        process.exit(withError ? 1 : 0)
 
     }
 

@@ -58,6 +58,10 @@ var Utilities = (function () {
                 return Utilities.isBoolean(value);
             case 'number':
                 return Utilities.isNumber(value);
+            case 'array':
+                return Utilities.isArray(value);
+            case 'object':
+                return Utilities.isObject(value);
             default:
                 console.log("Utilities.isDataType: No record of data type " + dataType + ". Test ignored.");
                 return true;
@@ -67,7 +71,7 @@ var Utilities = (function () {
         return value === null || value === undefined;
     };
     Utilities.isArray = function (value) {
-        return value.isArray();
+        return Array.isArray(value);
     };
     Utilities.isDate = function (value) {
         return util.types.isDate(value);

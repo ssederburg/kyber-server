@@ -107,7 +107,6 @@ var KyberServer = (function () {
                 switch (_a.label) {
                     case 0:
                         if (!err) return [3, 2];
-                        console.log('500: ' + err);
                         if (res.headersSent) {
                             return [2];
                         }
@@ -147,6 +146,11 @@ var KyberServer = (function () {
             process.on('SIGINT', function () {
                 _this.shutdown();
             });
+            process.on('uncaughtException', function (err) {
+                console.error("UncaughtException in KyberServer");
+                console.error(JSON.stringify(err, null, 1));
+                _this.shutdown(true);
+            });
             _this.events.emit(events_1.KyberServerEvents.ServerStarted, {
                 source: "KyberServer",
                 correlationId: "SYSTEM",
@@ -156,7 +160,8 @@ var KyberServer = (function () {
             console.log("\nServer listening on http://localhost:" + _this.options.port + "\n");
         });
     };
-    KyberServer.prototype.shutdown = function () {
+    KyberServer.prototype.shutdown = function (withError) {
+        if (withError === void 0) { withError = false; }
         if (this.shuttingDown)
             return;
         this.shuttingDown = true;
@@ -168,7 +173,7 @@ var KyberServer = (function () {
             source: "KyberServer",
             correlationId: "SYSTEM"
         });
-        process.exit(0);
+        process.exit(withError ? 1 : 0);
     };
     KyberServer.prototype.getGlobalSchematicResponse = function (httpStatus) {
         if (!this.globalSchematic)

@@ -61,7 +61,7 @@ var ExecutionContext = (function () {
     ExecutionContext.prototype.execute = function () {
         var _this = this;
         var result = new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
-            var response, err_1, response_1, response;
+            var response, err_1, firstErrorResponse, secondErrorResponse;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -80,16 +80,20 @@ var ExecutionContext = (function () {
                         err_1 = _a.sent();
                         if (!!this.wasOneCriticalFailure) return [3, 6];
                         this.wasOneCriticalFailure = true;
+                        if (this.httpStatus === 200) {
+                            console.warn("Error was thrown within ExecutionContext WITHOUT setting httpStatus to non-200. Check code path and set http status to correct fail code...");
+                            this.httpStatus = 500;
+                        }
                         return [4, this.respond()];
                     case 5:
-                        response_1 = _a.sent();
-                        console.log("executionContext.execute.error: Throwing " + JSON.stringify(response_1, null, 1));
-                        return [2, reject(response_1)];
+                        firstErrorResponse = _a.sent();
+                        console.log("executionContext.execute.error: Throwing " + JSON.stringify(firstErrorResponse, null, 1));
+                        return [2, reject(firstErrorResponse)];
                     case 6: return [4, this.errorResponse()];
                     case 7:
-                        response = _a.sent();
-                        console.log("executionContext.execute.error.secondchance: Throwing " + JSON.stringify(response, null, 1));
-                        return [2, reject(response)];
+                        secondErrorResponse = _a.sent();
+                        console.log("executionContext.execute.error.secondchance: Throwing " + JSON.stringify(secondErrorResponse, null, 1));
+                        return [2, reject(secondErrorResponse)];
                     case 8: return [2];
                 }
             });
@@ -230,6 +234,7 @@ var ExecutionContext = (function () {
                         theType = null;
                         test = _.find(this.schematic.responses, { httpStatus: this.httpStatus });
                         if (!test) {
+                            console.log("kyber-server.executionContext.getGlobalSchematicResponse: httpStatus " + this.httpStatus);
                             test = this.kyberServer.getGlobalSchematicResponse(this.httpStatus);
                             if (!test) {
                                 console.log("kyber-server.executionContext.respond.error: no record of response for http status " + this.httpStatus);
@@ -249,6 +254,9 @@ var ExecutionContext = (function () {
                         return [2, resolve(response.data || response)];
                     case 2:
                         err_3 = _a.sent();
+                        if (this.httpStatus === 200) {
+                            this.httpStatus = 500;
+                        }
                         this.errors.push("kyber-server.executionContext.respond().error");
                         return [2, reject(err_3)];
                     case 3: return [2];
@@ -271,6 +279,9 @@ var ExecutionContext = (function () {
                         return [2, resolve(response)];
                     case 2:
                         err_4 = _a.sent();
+                        if (this.httpStatus === 200) {
+                            this.httpStatus = 500;
+                        }
                         return [2, reject(err_4)];
                     case 3: return [2];
                 }
@@ -352,6 +363,9 @@ var ExecutionContext = (function () {
             catch (err) {
                 console.error("ExecutionContext.loadParameters: " + err);
                 _this.errors.push("ExecutionContext.loadParameters: " + err);
+                if (_this.httpStatus === 200) {
+                    _this.httpStatus = 500;
+                }
                 reject(err);
             }
         });
@@ -365,6 +379,9 @@ var ExecutionContext = (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
+                        if (this.httpStatus === 200) {
+                            this.httpStatus = 500;
+                        }
                         test = {
                             class: responses_1.ErrorResponse
                         };
