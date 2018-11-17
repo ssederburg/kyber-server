@@ -89,7 +89,7 @@ var Utilities = (function () {
         return value === null;
     };
     Utilities.isNumber = function (value) {
-        return typeof value === 'number';
+        return !isNaN(value);
     };
     Utilities.isObject = function (value) {
         return value !== null && typeof value === 'object';

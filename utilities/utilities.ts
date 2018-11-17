@@ -99,7 +99,7 @@ export class Utilities {
     }
 
     public static isNumber(value: any): boolean {
-        return typeof value === 'number'
+        return !isNaN(value)
     }
 
     public static isObject(value: any): boolean {
