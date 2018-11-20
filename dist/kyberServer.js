@@ -45,6 +45,7 @@ var _ = require("lodash");
 var env = require("dotenv").config();
 var executionContext_1 = require("./executionContext");
 var uuidv4 = require('uuid/v4');
+var swaggerUi = require('swagger-ui-express');
 var KyberServer = (function () {
     function KyberServer(options) {
         this.options = options;
@@ -101,6 +102,9 @@ var KyberServer = (function () {
                 this.server.use(express.static(this.options.staticPath));
             }
         }
+        console.log("Loading swagger from " + (process.cwd() + '/swagger.json'));
+        var swaggerDocument = require(process.cwd() + '/swagger.json');
+        this.server.use('/swagger.io', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
         this.server.use(function (err, req, res, next) { return __awaiter(_this, void 0, void 0, function () {
             var response;
             return __generator(this, function (_a) {

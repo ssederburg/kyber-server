@@ -8,4 +8,4 @@ export { ExecutionContext } from './executionContext';
 export { Utilities } from './utilities/utilities';
 export * from './validators';
 export { RawResponse, ErrorResponse } from './responses';
-export { RawComposer, FieldComposer } from './composers';
+export * from './processors';

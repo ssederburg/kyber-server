@@ -32,6 +32,4 @@ __export(require("./validators"));
 var responses_1 = require("./responses");
 exports.RawResponse = responses_1.RawResponse;
 exports.ErrorResponse = responses_1.ErrorResponse;
-var composers_1 = require("./composers");
-exports.RawComposer = composers_1.RawComposer;
-exports.FieldComposer = composers_1.FieldComposer;
+__export(require("./processors"));

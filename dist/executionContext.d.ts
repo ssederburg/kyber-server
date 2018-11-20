@@ -11,7 +11,7 @@ export declare class ExecutionContext {
     errors: any[];
     warnings: any[];
     log: any[];
-    raw: {};
+    raw: any;
     transformed: {};
     mapped: {};
     results: any[];

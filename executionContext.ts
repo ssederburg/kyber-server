@@ -17,7 +17,7 @@ export class ExecutionContext {
     public warnings = []
     public log = []
     
-    public raw = {}
+    public raw: any = {}
     public transformed = {}
     public mapped = {}
 
