@@ -1,6 +1,6 @@
 {
   "name": "kyber-server",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "authorize validate compose transform map act respond framework",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -35,7 +35,6 @@
     "@types/express": "^4.16.0",
     "@types/fs-extra": "^5.0.4",
     "@types/node": "^10.12.0",
-    "nodemon": "^1.18.4",
     "typescript": "^3.1.3"
   }
 }
