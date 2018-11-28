@@ -12,3 +12,4 @@ __export(require("./sharedResource"));
 __export(require("./executionModes"));
 __export(require("./processorResponse"));
 __export(require("./schematicResponse"));
+__export(require("./schemaDef"));

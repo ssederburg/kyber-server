@@ -1,4 +1,4 @@
-import { BaseProcessor, ProcessorDef } from '../schemas'
+import { BaseProcessor, ProcessorDef, SchemaDef } from '../schemas'
 import { ExecutionContext } from '../'
 
 export class SchematicResponse extends ProcessorDef {
@@ -7,5 +7,5 @@ export class SchematicResponse extends ProcessorDef {
     resolve?(executionContext: ExecutionContext): Promise<typeof BaseProcessor>|typeof BaseProcessor|null {
         return null
     }
-    schema?: any = {}
+    schema?: typeof SchemaDef = null
 }

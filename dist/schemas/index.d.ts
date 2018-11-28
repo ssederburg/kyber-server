@@ -8,3 +8,4 @@ export * from './sharedResource';
 export * from './executionModes';
 export * from './processorResponse';
 export * from './schematicResponse';
+export * from './schemaDef';
