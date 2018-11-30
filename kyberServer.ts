@@ -1,3 +1,19 @@
+const env = require("dotenv").config()
+if (process.env.APPDYNAMICS_HOSTNAME) {
+    console.log(`Standing up AppDynamics interface for node process as ${process.env.APPDYNAMICS_NODENAME} on ${process.env.APPDYNAMICS_TIERNAME}`)
+    require('appdynamics').profile({
+        controllerHostName: process.env.APPDYNAMICS_HOSTNAME,
+        controllerPort: process.env.APPDYNAMICS_PORT, 
+        
+        // If SSL, be sure to enable the next line
+        controllerSslEnabled: process.env.APPDYNAMICS_SSLENABLED,
+        accountName: process.env.APPDYNAMICS_ACCOUNTNAME,
+        accountAccessKey: process.env.APPDYNAMICS_ACCOUNTKEY,
+        applicationName: process.env.APPDYNAMICS_APPNAME,
+        tierName: process.env.APPDYNAMICS_TIERNAME,
+        nodeName: process.env.APPDYNAMICS_NODENAME // The controller will automatically append the node name with a unique number
+    })
+}
 import * as Express from 'express'
 
 const express = require('express')
@@ -10,7 +26,6 @@ import {RouteHandler, RouteOptions} from './routes'
 import {GlobalSchematic} from './schematics'
 import {KyberServerOptions} from './kyberServerOptions'
 import * as _ from 'lodash'
-const env = require("dotenv").config()
 import * as config from 'config'
 import { RequestContext, SchematicResponse } from './schemas';
 import { ExecutionContext } from './executionContext';

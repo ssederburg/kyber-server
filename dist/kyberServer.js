@@ -35,6 +35,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var env = require("dotenv").config();
+if (process.env.APPDYNAMICS_HOSTNAME) {
+    console.log("Standing up AppDynamics interface for node process as " + process.env.APPDYNAMICS_NODENAME + " on " + process.env.APPDYNAMICS_TIERNAME);
+    require('appdynamics').profile({
+        controllerHostName: process.env.APPDYNAMICS_HOSTNAME,
+        controllerPort: process.env.APPDYNAMICS_PORT,
+        controllerSslEnabled: process.env.APPDYNAMICS_SSLENABLED,
+        accountName: process.env.APPDYNAMICS_ACCOUNTNAME,
+        accountAccessKey: process.env.APPDYNAMICS_ACCOUNTKEY,
+        applicationName: process.env.APPDYNAMICS_APPNAME,
+        tierName: process.env.APPDYNAMICS_TIERNAME,
+        nodeName: process.env.APPDYNAMICS_NODENAME
+    });
+}
 var express = require('express');
 var helmet = require('helmet');
 var bodyParser = require('body-parser');
@@ -42,7 +56,6 @@ var EventEmitter = require('events');
 var events_1 = require("./events");
 var routes_1 = require("./routes");
 var _ = require("lodash");
-var env = require("dotenv").config();
 var executionContext_1 = require("./executionContext");
 var uuidv4 = require('uuid/v4');
 var swaggerUi = require('swagger-ui-express');
