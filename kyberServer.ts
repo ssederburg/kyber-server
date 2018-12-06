@@ -27,8 +27,8 @@ import {GlobalSchematic} from './schematics'
 import {KyberServerOptions} from './kyberServerOptions'
 import * as _ from 'lodash'
 import * as config from 'config'
-import { RequestContext, SchematicResponse } from './schemas';
-import { ExecutionContext } from './executionContext';
+import { RequestContext, SchematicResponse } from './schemas'
+import { ExecutionContext } from './executionContext'
 const uuidv4 = require('uuid/v4')
 const swaggerUi = require('swagger-ui-express')
 
@@ -107,9 +107,9 @@ export class KyberServer {
         }
         
         console.log(`Loading swagger from ${process.cwd() + '/swagger.json'}`)
-        const swaggerDocument = require(process.cwd() + '/swagger.json');
+        const swaggerDocument = require(process.cwd() + '/swagger.json')
 
-        this.server.use('/swagger.io', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+        this.server.use('/swagger.io', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
         this.server.use(async(err, req, res, next) => {
             if (err) {

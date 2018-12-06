@@ -6,7 +6,7 @@ import { KyberServerEvents } from './events'
 import { KyberServer } from './kyberServer'
 
 import * as _ from 'lodash'
-import { RawResponse, ErrorResponse } from './responses';
+import { RawResponse, ErrorResponse } from './responses'
 
 export class ExecutionContext {
 

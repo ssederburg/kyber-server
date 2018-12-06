@@ -1,5 +1,5 @@
-import { ExecutionContext } from "../executionContext";
-import { ProcessorDef, ProcessorResponse } from "./";
+import { ExecutionContext } from "../executionContext"
+import { ProcessorDef, ProcessorResponse } from "./"
 
 export class BaseProcessor {
 

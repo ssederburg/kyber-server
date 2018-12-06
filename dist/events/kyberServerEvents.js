@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var KyberServerEvents;
+export var KyberServerEvents;
 (function (KyberServerEvents) {
     KyberServerEvents["ServerStarting"] = "server-starting";
     KyberServerEvents["ServerStarted"] = "server-started";
@@ -16,4 +14,4 @@ var KyberServerEvents;
     KyberServerEvents["ProcessorStarted"] = "processor-started";
     KyberServerEvents["ProcessorEnded"] = "processor-ended";
     KyberServerEvents["EndRequest"] = "end-request";
-})(KyberServerEvents = exports.KyberServerEvents || (exports.KyberServerEvents = {}));
+})(KyberServerEvents || (KyberServerEvents = {}));

@@ -55,7 +55,7 @@ export class RouteHandler {
             return res.status(400).json(response)
         }
 
-        let execContext: ExecutionContext;
+        let execContext: ExecutionContext
         try {
             
             const schematicInstance = new options.schematic()
