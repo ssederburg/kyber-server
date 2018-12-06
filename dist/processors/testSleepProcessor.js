@@ -1,11 +1,13 @@
-import { BaseProcessor } from '../schemas';
-import { Utilities } from '../utilities/utilities';
-export class TestSleepProcessor extends BaseProcessor {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const schemas_1 = require("../schemas");
+const utilities_1 = require("../utilities/utilities");
+class TestSleepProcessor extends schemas_1.BaseProcessor {
     fx(args) {
         const result = new Promise((resolve, reject) => {
             try {
                 let timeout = 0;
-                if (!args || !args.timeout || !Utilities.isNumber(args.timeout)) {
+                if (!args || !args.timeout || !utilities_1.Utilities.isNumber(args.timeout)) {
                     console.log(`KyberServer.TestSleepProcessor.Warning: Invalid value set in schematic for args.timeout. Using default of 1 second.`);
                     timeout = 1000;
                 }
@@ -29,3 +31,4 @@ export class TestSleepProcessor extends BaseProcessor {
         return result;
     }
 }
+exports.TestSleepProcessor = TestSleepProcessor;

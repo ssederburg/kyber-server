@@ -1,4 +1,6 @@
-export class RouteOptions {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class RouteOptions {
     constructor() {
         this.verb = 'GET';
         this.path = '';
@@ -11,3 +13,4 @@ export class RouteOptions {
         return null;
     }
 }
+exports.RouteOptions = RouteOptions;

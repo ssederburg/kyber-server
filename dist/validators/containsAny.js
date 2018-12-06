@@ -1,6 +1,8 @@
-import { Utilities } from '../utilities/utilities';
-export function ContainsAny(input, value) {
-    if (!Utilities.isArray(input))
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const utilities_1 = require("../utilities/utilities");
+function ContainsAny(input, value) {
+    if (!utilities_1.Utilities.isArray(input))
         return false;
     let wasOne = false;
     input.forEach((item) => {
@@ -10,3 +12,4 @@ export function ContainsAny(input, value) {
     });
     return wasOne;
 }
+exports.ContainsAny = ContainsAny;

@@ -4,6 +4,7 @@
     "outDir": "dist",
     "sourceMap": false,
     "declaration": true,
+    "module": "none",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,

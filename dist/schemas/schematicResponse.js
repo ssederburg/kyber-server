@@ -1,5 +1,7 @@
-import { ProcessorDef } from '../schemas';
-export class SchematicResponse extends ProcessorDef {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const schemas_1 = require("../schemas");
+class SchematicResponse extends schemas_1.ProcessorDef {
     constructor() {
         super(...arguments);
         this.httpStatus = 200;
@@ -10,3 +12,4 @@ export class SchematicResponse extends ProcessorDef {
         return null;
     }
 }
+exports.SchematicResponse = SchematicResponse;

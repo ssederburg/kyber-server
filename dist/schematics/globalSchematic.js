@@ -1,5 +1,7 @@
-import { Schematic } from './';
-export class GlobalSchematic extends Schematic {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const _1 = require("./");
+class GlobalSchematic extends _1.Schematic {
     constructor() {
         super(...arguments);
         this.eventHandlers = [];
@@ -10,3 +12,4 @@ export class GlobalSchematic extends Schematic {
         this.onShutdown = [];
     }
 }
+exports.GlobalSchematic = GlobalSchematic;

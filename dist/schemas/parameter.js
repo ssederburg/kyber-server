@@ -1,4 +1,6 @@
-export class Parameter {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class Parameter {
     constructor() {
         this.required = false;
         this.dataType = 'string';
@@ -8,3 +10,4 @@ export class Parameter {
         this.blackList = [];
     }
 }
+exports.Parameter = Parameter;

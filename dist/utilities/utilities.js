@@ -1,7 +1,9 @@
-import * as _ from 'lodash';
-import * as config from 'config';
-import * as util from 'util';
-export class Utilities {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const _ = require("lodash");
+const config = require("config");
+const util = require("util");
+class Utilities {
     static evalExpression(expression, source) {
         const exprs = expression.split('||');
         if (!exprs || exprs.length === 0) {
@@ -117,3 +119,4 @@ export class Utilities {
         });
     }
 }
+exports.Utilities = Utilities;

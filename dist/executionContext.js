@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -6,11 +7,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { Utilities } from './utilities/utilities';
-import { KyberServerEvents } from './events';
-import * as _ from 'lodash';
-import { RawResponse, ErrorResponse } from './responses';
-export class ExecutionContext {
+Object.defineProperty(exports, "__esModule", { value: true });
+const utilities_1 = require("./utilities/utilities");
+const events_1 = require("./events");
+const _ = require("lodash");
+const responses_1 = require("./responses");
+class ExecutionContext {
     constructor(req, schematic, sharedResources, kyberServer) {
         this.req = req;
         this.schematic = schematic;
@@ -76,7 +78,7 @@ export class ExecutionContext {
                 const processTasks = [];
                 let counter = 0;
                 _.forEach(_.sortBy(activities, 'ordinal'), (activityDef) => __awaiter(this, void 0, void 0, function* () {
-                    this.kyberServer.events.emit(KyberServerEvents.ActivityStarted, {
+                    this.kyberServer.events.emit(events_1.KyberServerEvents.ActivityStarted, {
                         source: `ExecutionContext.runActivities`,
                         correlationId: this.correlationId,
                         schematic: this.schematic.id,
@@ -87,7 +89,7 @@ export class ExecutionContext {
                         yield this.runActivities(activityDef.activities);
                         counter = counter + 1;
                         if (counter >= activities.length) {
-                            this.kyberServer.events.emit(KyberServerEvents.ActivityEnded, {
+                            this.kyberServer.events.emit(events_1.KyberServerEvents.ActivityEnded, {
                                 source: `ExecutionContext.runActivities`,
                                 correlationId: this.correlationId,
                                 schematic: this.schematic.id,
@@ -117,7 +119,7 @@ export class ExecutionContext {
                 }
                 const tasks = [];
                 _.forEach(_.sortBy(processes, 'ordinal'), (process) => {
-                    this.kyberServer.events.emit(KyberServerEvents.ProcessorStarted, {
+                    this.kyberServer.events.emit(events_1.KyberServerEvents.ProcessorStarted, {
                         source: `ExecutionContext.runProcesses`,
                         correlationId: this.correlationId,
                         schematic: this.schematic.id,
@@ -127,7 +129,7 @@ export class ExecutionContext {
                     if (process.class && !process.className) {
                         const test = new process.class(this, process);
                         tasks.push(this.tryCatchWrapperForProcess(test, process).then((response) => {
-                            this.kyberServer.events.emit(KyberServerEvents.ProcessorEnded, {
+                            this.kyberServer.events.emit(events_1.KyberServerEvents.ProcessorEnded, {
                                 source: `ExecutionContext.runProcesses`,
                                 correlationId: this.correlationId,
                                 schematic: this.schematic.id,
@@ -161,7 +163,7 @@ export class ExecutionContext {
                     test = this.kyberServer.getGlobalSchematicResponse(this.httpStatus);
                     if (!test) {
                         console.log(`kyber-server.executionContext.respond.error: no record of response for http status ${this.httpStatus}`);
-                        theType = RawResponse;
+                        theType = responses_1.RawResponse;
                     }
                     else {
                         theType = test.class;
@@ -204,21 +206,21 @@ export class ExecutionContext {
             try {
                 let wasOneInvalid = false;
                 if (this.schematic && this.schematic.parameters && this.schematic.parameters.length > 0) {
-                    this.kyberServer.events.emit(KyberServerEvents.ExecutionContextBeforeLoadParameters, {
+                    this.kyberServer.events.emit(events_1.KyberServerEvents.ExecutionContextBeforeLoadParameters, {
                         source: `ExecutionContext.loadParameters`,
                         correlationId: this.correlationId,
                         schematic: this.schematic.id,
                         parameters: Object.assign({}, this.schematic.parameters)
                     });
                     _.forEach(this.schematic.parameters, (parameter) => {
-                        const value = Utilities.evalExpression(parameter.source, this.req);
+                        const value = utilities_1.Utilities.evalExpression(parameter.source, this.req);
                         parameter.isValid = true;
-                        if (parameter.required && Utilities.isNullOrUndefined(value)) {
+                        if (parameter.required && utilities_1.Utilities.isNullOrUndefined(value)) {
                             parameter.isValid = false;
                             this.errors.push(`Parameter ${parameter.name} is required.`);
                         }
                         if (value && parameter.dataType && parameter.isValid) {
-                            parameter.isValid = Utilities.isDataType(value, parameter.dataType);
+                            parameter.isValid = utilities_1.Utilities.isDataType(value, parameter.dataType);
                             if (!parameter.isValid) {
                                 this.errors.push(`Parameter ${parameter.name} is an invalid data type. Should be ${parameter.dataType}.`);
                             }
@@ -237,7 +239,7 @@ export class ExecutionContext {
                         }
                         if (value && parameter.isValid && parameter.validators && parameter.validators.length > 0) {
                             _.forEach(parameter.validators, (validator) => {
-                                if (Utilities.isFunction(validator)) {
+                                if (utilities_1.Utilities.isFunction(validator)) {
                                     const testResult = validator(value);
                                     if (!testResult) {
                                         parameter.isValid = false;
@@ -256,7 +258,7 @@ export class ExecutionContext {
                             this.parameters.push(newParam);
                         }
                     });
-                    this.kyberServer.events.emit(KyberServerEvents.ExecutionContextAfterLoadParameters, {
+                    this.kyberServer.events.emit(events_1.KyberServerEvents.ExecutionContextAfterLoadParameters, {
                         source: `ExecutionContext.loadParameters`,
                         correlationId: this.correlationId,
                         schematic: this.schematic.id,
@@ -287,9 +289,9 @@ export class ExecutionContext {
                     this.httpStatus = 500;
                 }
                 const test = {
-                    class: ErrorResponse
+                    class: responses_1.ErrorResponse
                 };
-                const task = new ErrorResponse(this, test);
+                const task = new responses_1.ErrorResponse(this, test);
                 const response = yield this.tryCatchWrapperForProcess(task, test);
                 return resolve(response.data || response);
             }
@@ -305,3 +307,4 @@ export class ExecutionContext {
         return result;
     }
 }
+exports.ExecutionContext = ExecutionContext;

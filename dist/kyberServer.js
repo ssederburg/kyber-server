@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -6,6 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 const env = require("dotenv").config();
 if (process.env.APPDYNAMICS_HOSTNAME) {
     console.log(`Standing up AppDynamics interface for node process as ${process.env.APPDYNAMICS_NODENAME} on ${process.env.APPDYNAMICS_TIERNAME}`);
@@ -24,13 +26,13 @@ const express = require('express');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const EventEmitter = require('events');
-import { KyberServerEvents } from './events';
-import { RouteHandler } from './routes';
-import * as _ from 'lodash';
-import { ExecutionContext } from './executionContext';
+const events_1 = require("./events");
+const routes_1 = require("./routes");
+const _ = require("lodash");
+const executionContext_1 = require("./executionContext");
 const uuidv4 = require('uuid/v4');
 const swaggerUi = require('swagger-ui-express');
-export class KyberServer {
+class KyberServer {
     constructor(options) {
         this.options = options;
         this.server = null;
@@ -65,14 +67,14 @@ export class KyberServer {
             console.error(`Attempted to KyberServer.registerRoute after server started. Route Registration ignored...`);
             return;
         }
-        const routeHandler = new RouteHandler(this);
+        const routeHandler = new routes_1.RouteHandler(this);
         routeHandler.register(this.server, options);
     }
     start() {
         if (this.isStarted)
             return;
         this.isStarted = true;
-        this.events.emit(KyberServerEvents.ServerStarting, {
+        this.events.emit(events_1.KyberServerEvents.ServerStarting, {
             source: `KyberServer`,
             correlationId: `SYSTEM`
         });
@@ -120,7 +122,7 @@ export class KyberServer {
                 console.error(JSON.stringify(err, null, 1));
                 this.shutdown(true);
             });
-            this.events.emit(KyberServerEvents.ServerStarted, {
+            this.events.emit(events_1.KyberServerEvents.ServerStarted, {
                 source: `KyberServer`,
                 correlationId: `SYSTEM`,
                 status: 0,
@@ -133,11 +135,11 @@ export class KyberServer {
         if (this.shuttingDown)
             return;
         this.shuttingDown = true;
-        this.events.emit(KyberServerEvents.ServerStopping, {
+        this.events.emit(events_1.KyberServerEvents.ServerStopping, {
             source: `KyberServer`,
             correlationId: `SYSTEM`
         });
-        this.events.emit(KyberServerEvents.ServerStopped, {
+        this.events.emit(events_1.KyberServerEvents.ServerStopped, {
             source: `KyberServer`,
             correlationId: `SYSTEM`
         });
@@ -160,12 +162,12 @@ export class KyberServer {
     throwGlobalSchematicError(req, httpStatus, errText) {
         const result = new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const executionContext = new ExecutionContext(req, new this.globalSchematic(), this.sharedResources, this);
+                const executionContext = new executionContext_1.ExecutionContext(req, new this.globalSchematic(), this.sharedResources, this);
                 executionContext.httpStatus = httpStatus;
                 executionContext.raw = errText;
                 executionContext.errors.push(errText);
                 const response = yield executionContext.execute();
-                this.events.emit(KyberServerEvents.GlobalSchematicError, {
+                this.events.emit(events_1.KyberServerEvents.GlobalSchematicError, {
                     source: `KyberServer.throwGlobalSchematicError`,
                     correlationId: req.id,
                     path: req.path,
@@ -185,3 +187,4 @@ export class KyberServer {
         return result;
     }
 }
+exports.KyberServer = KyberServer;

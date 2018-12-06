@@ -1,5 +1,7 @@
-import { BaseProcessor } from '../schemas';
-export class ErrorResponse extends BaseProcessor {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const schemas_1 = require("../schemas");
+class ErrorResponse extends schemas_1.BaseProcessor {
     fx(args) {
         const result = new Promise((resolve, reject) => {
             try {
@@ -30,3 +32,4 @@ export class ErrorResponse extends BaseProcessor {
         return result;
     }
 }
+exports.ErrorResponse = ErrorResponse;

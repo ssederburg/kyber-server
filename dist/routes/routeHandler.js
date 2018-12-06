@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -6,10 +7,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { ExecutionContext } from '../executionContext';
-import { Utilities } from '../utilities/utilities';
-import { KyberServerEvents } from '../events';
-export class RouteHandler {
+Object.defineProperty(exports, "__esModule", { value: true });
+const executionContext_1 = require("../executionContext");
+const utilities_1 = require("../utilities/utilities");
+const events_1 = require("../events");
+class RouteHandler {
     constructor(kyberServer) {
         this.kyberServer = kyberServer;
     }
@@ -53,7 +55,7 @@ export class RouteHandler {
                     const response = yield this.throwError(req, 408, `Request Timed Out.`, options, next);
                     return res.status(408).json(response);
                 }), schematicInstance.timeout || 5000);
-                execContext = new ExecutionContext(req, schematicInstance, options.sharedResources || [], this.kyberServer);
+                execContext = new executionContext_1.ExecutionContext(req, schematicInstance, options.sharedResources || [], this.kyberServer);
                 if (req.timedout)
                     return;
                 yield this.beforeEachExecution(server, options, req, res);
@@ -69,11 +71,11 @@ export class RouteHandler {
             catch (err) {
                 if (res.headersSent)
                     return;
-                if (!Utilities.isString(err)) {
+                if (!utilities_1.Utilities.isString(err)) {
                     const httpStatus = execContext.httpStatus === 200 ? 500 : execContext.httpStatus;
                     const endTime = new Date();
                     const runtime = Math.abs(+endTime - +req.starttime) / 1000;
-                    this.kyberServer.events.emit(KyberServerEvents.RouteHandlerException, {
+                    this.kyberServer.events.emit(events_1.KyberServerEvents.RouteHandlerException, {
                         source: `RouteHandler.execute.catch`,
                         correlationId: req.id,
                         body: req.body,
@@ -102,7 +104,7 @@ export class RouteHandler {
     beforeEachExecution(server, options, req, res) {
         const startTime = new Date();
         req.starttime = startTime;
-        this.kyberServer.events.emit(KyberServerEvents.BeginRequest, {
+        this.kyberServer.events.emit(events_1.KyberServerEvents.BeginRequest, {
             source: `RouteHandler.beforeEachExecution`,
             correlationId: req.id,
             body: req.body,
@@ -118,7 +120,7 @@ export class RouteHandler {
     afterEachExecution(server, options, req, res, next) {
         const endTime = new Date();
         const runtime = Math.abs(+endTime - +req.starttime) / 1000;
-        this.kyberServer.events.emit(KyberServerEvents.EndRequest, {
+        this.kyberServer.events.emit(events_1.KyberServerEvents.EndRequest, {
             source: `RouteHandler.afterEachExecution`,
             correlationId: req.id,
             body: req.body,
@@ -150,3 +152,4 @@ export class RouteHandler {
         return result;
     }
 }
+exports.RouteHandler = RouteHandler;

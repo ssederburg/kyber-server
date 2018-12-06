@@ -1,4 +1,6 @@
-export class ProcessorResponse {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class ProcessorResponse {
     constructor() {
         this.successful = true;
         this.message = null;
@@ -6,3 +8,4 @@ export class ProcessorResponse {
         this.data = {};
     }
 }
+exports.ProcessorResponse = ProcessorResponse;

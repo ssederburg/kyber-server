@@ -1,5 +1,7 @@
-import { BaseProcessor } from '../schemas';
-export class RawComposer extends BaseProcessor {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const schemas_1 = require("../schemas");
+class RawComposer extends schemas_1.BaseProcessor {
     fx(args) {
         const result = new Promise((resolve, reject) => {
             try {
@@ -19,3 +21,4 @@ export class RawComposer extends BaseProcessor {
         return result;
     }
 }
+exports.RawComposer = RawComposer;

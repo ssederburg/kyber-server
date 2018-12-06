@@ -1,4 +1,6 @@
-export class BaseProcessor {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class BaseProcessor {
     constructor(executionContext, processorDef) {
         this.executionContext = executionContext;
         this.processorDef = processorDef;
@@ -9,3 +11,4 @@ export class BaseProcessor {
         });
     }
 }
+exports.BaseProcessor = BaseProcessor;
