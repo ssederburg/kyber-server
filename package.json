@@ -1,6 +1,6 @@
 {
   "name": "kyber-server",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "authorize validate compose transform map act respond framework",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/ssederburg/kyber-server#readme",
   "dependencies": {
-    "appdynamics": "^4.5.2",
+    "appdynamics": "^4.3.8",
     "body-parser": "^1.18.3",
     "config": "^2.0.1",
     "dotenv": "^6.1.0",

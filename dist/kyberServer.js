@@ -11,7 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const env = require("dotenv").config();
 if (process.env.APPDYNAMICS_HOSTNAME) {
     console.log(`Standing up AppDynamics interface for node process as ${process.env.APPDYNAMICS_NODENAME} on ${process.env.APPDYNAMICS_TIERNAME}`);
-    require('appdynamics').profile({
+    const appDSession = {
         controllerHostName: process.env.APPDYNAMICS_HOSTNAME,
         controllerPort: process.env.APPDYNAMICS_PORT,
         controllerSslEnabled: process.env.APPDYNAMICS_SSLENABLED,
@@ -19,8 +19,21 @@ if (process.env.APPDYNAMICS_HOSTNAME) {
         accountAccessKey: process.env.APPDYNAMICS_ACCOUNTKEY,
         applicationName: process.env.APPDYNAMICS_APPNAME,
         tierName: process.env.APPDYNAMICS_TIERNAME,
-        nodeName: process.env.APPDYNAMICS_NODENAME
-    });
+        nodeName: process.env.APPDYNAMICS_NODENAME,
+    };
+    if (process.env.APPDYNAMICS_DEBUG) {
+        appDSession.debug = true;
+        appDSession.logging = {
+            'logfiles': [{
+                    'root_directory': '/tmp/appd',
+                    'filename': 'echo_%N.log',
+                    'level': 'DEBUG',
+                    'max_size': 10000,
+                    'max_files': 10
+                }]
+        };
+    }
+    require('appdynamics').profile(appDSession);
 }
 const express = require('express');
 const helmet = require('helmet');
